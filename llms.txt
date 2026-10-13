@@ -1,0 +1,21 @@
+# Elliott Olson
+
+> Personal website of Elliott Olson, a senior software engineer at Amazon AGI in Bellevue, Washington, who builds infrastructure for evaluating and serving foundation models.
+
+## About
+
+- Senior Software Development Engineer at Amazon (2026 to present); at Amazon since 2022, after Alexa internships in the summers of 2020 and 2021.
+- Owns the inference architecture behind Amazon's central model evaluation platform, used by more than 130 scientists to launch the Nova family of models.
+- Built the original internal application for testing in-development models, which became the foundation for the Nova consumer chat product.
+- Previously led a latency program across six teams for Alexa's language understanding.
+- Co-inventor on U.S. Patent 12,657,393, "Language Model Processing" (granted June 2026).
+- Contributing author of "The Amazon Nova Family of Models: Technical Report and Model Card".
+- B.S. in Computer Science, Iowa State University (2017 to 2021).
+
+## Links
+
+- [Website](https://elliottolson.com/)
+- [LinkedIn](https://www.linkedin.com/in/elliottolson)
+- [GitHub](https://github.com/elliottolson)
+- [Patent](https://patents.google.com/patent/US12657393B1/en)
+- [Nova technical report](https://arxiv.org/abs/2506.12103)

@@ -4,52 +4,304 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Elliott Olson</title>
-  <meta name="description" content="Personal website of Elliott Olson.">
-  <meta name="color-scheme" content="light dark">
-  <style>
-    :root {
-      --bg: #fafaf8;
-      --fg: #16161a;
-      --muted: #6b6b76;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #101013;
-        --fg: #f2f2f4;
-        --muted: #8e8e99;
-      }
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background: var(--bg);
-      color: var(--fg);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      text-align: center;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(2.25rem, 8vw, 4.5rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-    }
-    p {
-      margin: 16px 0 0;
-      font-size: 1.0625rem;
-      color: var(--muted);
-    }
-  </style>
+  <meta name="description" content="Elliott Olson is a senior software engineer at Amazon AGI, building the systems that test foundation models before they ship.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+  <meta property="og:title" content="Elliott Olson">
+  <meta property="og:description" content="Senior software engineer at Amazon AGI, building the systems that test foundation models before they ship.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://elliottolson.com/">
+  <meta property="og:site_name" content="Elliott Olson">
+  <meta property="og:image" content="https://elliottolson.com/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Elliott Olson. Infrastructure for AI at scale.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://elliottolson.com/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Elliott Olson",
+    "url": "https://elliottolson.com/",
+    "image": "https://elliottolson.com/og.png",
+    "jobTitle": "Senior Software Development Engineer",
+    "worksFor": { "@type": "Organization", "name": "Amazon" },
+    "alumniOf": { "@type": "CollegeOrUniversity", "name": "Iowa State University" },
+    "address": { "@type": "PostalAddress", "addressLocality": "Bellevue", "addressRegion": "WA", "addressCountry": "US" },
+    "sameAs": [
+      "https://www.linkedin.com/in/elliottolson",
+      "https://github.com/elliottolson"
+    ]
+  }
+  </script>
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
-  <main>
-    <h1>Elliott Olson</h1>
-    <p>Something new is on the way.</p>
+  <header class="nav" id="nav">
+    <div class="wrap nav__inner">
+      <a class="nav__name" href="#top">Elliott Olson</a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="#work">Work</a>
+        <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="nav__progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="top">
+    <section class="hero" id="hero" data-field>
+      <canvas class="field" aria-hidden="true"></canvas>
+      <div class="wrap hero__inner">
+        <p class="hero__eyebrow rise" style="--i:0">Senior Software Engineer, Amazon AGI</p>
+        <h1 class="hero__title" aria-label="Infrastructure for AI at scale.">
+          <span class="word" style="--i:1" aria-hidden="true">Infrastructure</span>
+          <span class="word" style="--i:2" aria-hidden="true">for</span>
+          <span class="word" style="--i:3" aria-hidden="true">AI</span>
+          <br>
+          <span class="word" style="--i:4" aria-hidden="true">at</span>
+          <span class="word" style="--i:5" aria-hidden="true">scale.</span>
+        </h1>
+        <p class="hero__sub rise" style="--i:7">I’m Elliott. I build the systems that put every Amazon Nova model to the test before it ships.</p>
+        <div class="hero__actions rise" style="--i:8">
+          <a class="button" href="#work">See my work</a>
+          <a class="link" href="https://www.linkedin.com/in/elliottolson" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <a class="hero__scroll rise" style="--i:10" href="#about" aria-label="Scroll down"><span></span></a>
+    </section>
+
+    <section class="about" id="about">
+      <div class="wrap">
+        <p class="statement" id="statement">Every model has to prove itself before it ships. I build the systems where that happens.</p>
+      </div>
+    </section>
+
+    <section class="launches" aria-label="Launches my work sits behind">
+      <p class="wrap section__label reveal">My work sits behind</p>
+      <div class="marquee reveal">
+        <ul class="marquee__track">
+          <li>Titan Text Premier</li>
+          <li>Nova Micro</li>
+          <li>Nova Lite</li>
+          <li>Nova Pro</li>
+          <li>Nova Premier</li>
+          <li>Nova Canvas</li>
+          <li>Nova 2 Lite</li>
+          <li>Alexa</li>
+          <li>Alexa+</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="work">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="section__label">Selected work</p>
+          <h2>What I’ve built.</h2>
+        </header>
+
+        <div class="bento">
+          <article class="tile tile--8 tile--tall reveal">
+            <div class="tile__viz">
+              <div class="viz-matrix" aria-hidden="true"></div>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Amazon AGI</p>
+              <h3 class="tile__title tile__title--lg">The platform every Nova model is tested on.</h3>
+              <p class="tile__body">More than 130 scientists across pre-training, post-training, safety and release rely on it. I own the inference architecture underneath.</p>
+            </div>
+          </article>
+
+          <article class="tile tile--4 tile--tall reveal">
+            <div class="tile__viz">
+              <div class="viz-bars" aria-hidden="true">
+                <div class="bar"><span>Before</span><i></i></div>
+                <div class="bar bar--after"><span>After</span><i></i></div>
+              </div>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Speed</p>
+              <p class="tile__num"><span data-count="95">95</span>%</p>
+              <p class="tile__body">less time spent scoring evaluations. Results load about 40% faster.</p>
+            </div>
+          </article>
+
+          <article class="tile tile--4 reveal">
+            <div class="tile__viz">
+              <div class="viz-chat" aria-hidden="true">
+                <div class="bubble bubble--user"><i></i></div>
+                <div class="bubble bubble--model"><i></i><i></i><i></i></div>
+                <div class="bubble bubble--typing"><b></b><b></b><b></b></div>
+              </div>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Nova chat</p>
+              <h3 class="tile__title">An internal tool that became a product.</h3>
+              <p class="tile__body">I built the first app Amazon’s leadership used to try models still in development. It became the foundation for the Nova consumer chat product.</p>
+            </div>
+          </article>
+
+          <article class="tile tile--4 reveal">
+            <div class="tile__viz">
+              <div class="viz-nights" aria-hidden="true">
+                <span style="--h:.78"></span><span style="--h:.82"></span><span style="--h:.8"></span><span style="--h:.86"></span><span style="--h:.84"></span><span style="--h:.88"></span><span style="--h:.87"></span><span style="--h:.9"></span><span style="--h:.89"></span><span class="dip" style="--h:.5"></span><span style="--h:.91"></span><span style="--h:.93"></span><span style="--h:.92"></span><span style="--h:.96"></span>
+              </div>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Automated evaluations</p>
+              <h3 class="tile__title">Regressions caught overnight.</h3>
+              <p class="tile__body">I set up nightly runs that test each new checkpoint and flag a drop in quality before a release candidate is chosen.</p>
+            </div>
+          </article>
+
+          <article class="tile tile--4 reveal">
+            <div class="tile__viz">
+              <svg class="viz-flow" viewBox="0 0 320 132" fill="none" aria-hidden="true">
+                <path class="flow" d="M44 22 C 104 22, 96 66, 150 66"/>
+                <path class="flow" d="M44 66 H150"/>
+                <path class="flow" d="M44 110 C 104 110, 96 66, 150 66"/>
+                <path class="flow" d="M186 66 H262"/>
+                <rect class="node" x="12" y="8" width="32" height="28" rx="8"/>
+                <rect class="node" x="12" y="52" width="32" height="28" rx="8"/>
+                <rect class="node" x="12" y="96" width="32" height="28" rx="8"/>
+                <rect class="node" x="150" y="46" width="36" height="40" rx="10"/>
+                <circle class="node node--end" cx="284" cy="66" r="22"/>
+              </svg>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Agent benchmarks</p>
+              <h3 class="tile__title">Any benchmark, no rewrites.</h3>
+              <p class="tile__body">I designed the layer that lets Amazon’s models take third-party agent benchmarks exactly as published. Its results appeared in Nova’s re:Invent 2025 model card.</p>
+            </div>
+          </article>
+
+          <article class="tile tile--8 reveal">
+            <div class="tile__viz">
+              <div class="viz-lanes" aria-hidden="true">
+                <span style="--s:2.4s;--o:-0.3s"></span>
+                <span style="--s:3.1s;--o:-1.9s"></span>
+                <span style="--s:2s;--o:-1.1s"></span>
+                <span style="--s:3.6s;--o:-2.7s"></span>
+                <span style="--s:2.7s;--o:-0.8s"></span>
+                <span style="--s:2.2s;--o:-1.6s"></span>
+              </div>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Alexa</p>
+              <h3 class="tile__title tile__title--lg">Hundreds of millions of requests a day, answered faster.</h3>
+              <p class="tile__body">I led a latency program across six teams for Alexa’s language understanding, and co-designed an inference optimization later adopted by Alexa+.</p>
+              <dl class="tile__stats">
+                <div><dt><span data-count="30">30</span>%</dt><dd>faster question answering</dd></div>
+                <div><dt><span data-count="18">18</span>%</dt><dd>faster home automation</dd></div>
+                <div><dt><span data-count="39">39</span> ms</dt><dd>saved by processing locally</dd></div>
+              </dl>
+            </div>
+          </article>
+
+          <article class="tile tile--4 reveal">
+            <div class="tile__viz">
+              <div class="viz-doc" aria-hidden="true">
+                <div class="sheet sheet--back"></div>
+                <div class="sheet">
+                  <i class="sheet__title"></i><i></i><i></i><i></i><i class="sheet__short"></i>
+                  <b class="sheet__seal"></b>
+                </div>
+              </div>
+            </div>
+            <div class="tile__text">
+              <p class="tile__label">Patent</p>
+              <p class="tile__num tile__num--sm">12,657,393</p>
+              <p class="tile__body">Co-inventor of “Language Model Processing,” granted by the U.S. Patent Office in June 2026.</p>
+              <a class="link tile__link" href="https://patents.google.com/patent/US12657393B1/en" target="_blank" rel="noopener">Read the patent <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="experience">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="section__label">Experience</p>
+          <h2>From intern to senior engineer.</h2>
+        </header>
+
+        <ol class="rows">
+          <li class="row reveal">
+            <span class="row__when">2026 – Present</span>
+            <span class="row__what">Senior Software Development Engineer</span>
+            <span class="row__where">Amazon AGI · Bellevue, WA</span>
+          </li>
+          <li class="row reveal">
+            <span class="row__when">2022 – 2026</span>
+            <span class="row__what">Software Development Engineer II</span>
+            <span class="row__where">Amazon AGI, Alexa AI</span>
+          </li>
+          <li class="row reveal">
+            <span class="row__when">2022</span>
+            <span class="row__what">Software Development Engineer I</span>
+            <span class="row__where">Alexa AI</span>
+          </li>
+          <li class="row reveal">
+            <span class="row__when">Summer 2021</span>
+            <span class="row__what">Software Development Engineer Intern</span>
+            <span class="row__where">Alexa</span>
+          </li>
+          <li class="row reveal">
+            <span class="row__when">Summer 2020</span>
+            <span class="row__what">Software Development Engineer Intern</span>
+            <span class="row__where">Alexa</span>
+          </li>
+          <li class="row reveal">
+            <span class="row__when">2017 – 2021</span>
+            <span class="row__what">B.S. Computer Science</span>
+            <span class="row__where">Iowa State University</span>
+          </li>
+        </ol>
+
+        <header class="section__head section__head--sub reveal">
+          <p class="section__label">Patent and publication</p>
+        </header>
+
+        <ol class="rows">
+          <li class="row reveal">
+            <span class="row__when">2026</span>
+            <span class="row__what"><a href="https://patents.google.com/patent/US12657393B1/en" target="_blank" rel="noopener">Language Model Processing <span aria-hidden="true">↗</span></a></span>
+            <span class="row__where">Co-inventor · U.S. Patent 12,657,393</span>
+          </li>
+          <li class="row reveal">
+            <span class="row__when">2025</span>
+            <span class="row__what"><a href="https://arxiv.org/abs/2506.12103" target="_blank" rel="noopener">The Amazon Nova Family of Models: Technical Report and Model Card <span aria-hidden="true">↗</span></a></span>
+            <span class="row__where">Contributing author · arXiv</span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="contact" id="contact" data-field>
+      <canvas class="field field--contact" aria-hidden="true"></canvas>
+      <div class="wrap contact__inner">
+        <h2 class="contact__title reveal">Let’s talk.</h2>
+        <div class="contact__links reveal">
+          <a class="link link--lg" href="https://www.linkedin.com/in/elliottolson" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a>
+          <a class="link link--lg" href="https://github.com/elliottolson" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>© 2026 Elliott Olson</span>
+      <span>Bellevue, Washington</span>
+    </div>
+  </footer>
+
+  <script src="main.js" defer></script>
 </body>
 </html>
