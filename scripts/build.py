@@ -12,7 +12,7 @@ Each post is a Markdown file with a short header:
     topic: Evaluation
     cover: waves            (waves, rings, beams or cells)
     summary: One or two sentences shown on cards and under the title.
-    sample: true            (optional: marks a placeholder post and hides it from search engines)
+    draft: true             (optional: keeps the post out of the published site)
     ---
 
 Beyond ordinary Markdown, a post can use:
@@ -41,9 +41,12 @@ Beyond ordinary Markdown, a post can use:
     ```
 
 Running this script writes the finished site into dist/, which is not committed:
-GitHub runs the same script when it publishes the site.
+GitHub runs the same script when it publishes the site. Drafts are left out
+unless asked for, which is what the local preview does. With no posts to show,
+the Writing section is left off the site entirely.
 
-    python3 scripts/build.py
+    python3 scripts/build.py             the site as it will be published
+    python3 scripts/build.py --drafts    the same, with drafts included
 """
 import html
 import json
@@ -69,6 +72,8 @@ SHARE = CONTENT / "share"
 SITE_URL = "https://elliottolson.com"
 COVERS = ("waves", "rings", "beams", "cells")
 HOME_START, HOME_END = "<!-- writing:start -->", "<!-- writing:end -->"
+# Parts of the home page that only make sense once there is something to read
+ONLY_WITH_POSTS = re.compile(r"[ \t]*<!-- if-writing -->\n(.*?)[ \t]*<!-- /if-writing -->\n", re.S)
 FEED_TITLE = "Elliott Olson – Writing"
 FEED_DESCRIPTION = "Notes on evaluating models, building infrastructure, and the work around it."
 
@@ -95,7 +100,7 @@ def load_post(path):
         "topic": meta["topic"],
         "summary": meta["summary"],
         "cover": cover,
-        "sample": meta.get("sample", "").lower() == "true",
+        "draft": meta.get("draft", "").lower() == "true",
         "minutes": reading_minutes(body),
         "body": render_body(body, path.name),
     }
@@ -241,8 +246,8 @@ def page_head(title, description, noindex, path, image="/og.png", published=None
 """
 
 
-def page_foot(sample):
-    badge = '\n  <div class="proto">Sample content</div>\n' if sample else ""
+def page_foot(draft):
+    badge = '\n  <div class="proto">Draft · not published</div>\n' if draft else ""
     return f"""
   <footer class="footer">
     <div class="wrap footer__inner">
@@ -300,8 +305,8 @@ def index_page(posts):
       <div class="posts">
 {"".join(card(post) for post in rest)}      </div>
 """ if rest else '\n      <div class="posts"></div>\n'
-    sample = any(post["sample"] for post in posts)
-    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, sample, "/writing/") + f"""
+    draft = all(post["draft"] for post in posts)
+    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, draft, "/writing/") + f"""
   <main>
     <header class="page-head" data-field>
       <canvas class="field" aria-hidden="true"></canvas>
@@ -321,7 +326,7 @@ def index_page(posts):
     <section class="wrap">
 {card(featured, featured=True)}{grid}    </section>
   </main>
-""" + page_foot(sample)
+""" + page_foot(any(post["draft"] for post in posts))
 
 
 def article_page(post, following):
@@ -340,8 +345,9 @@ def article_page(post, following):
     </div>
 """ if following else ""
     path = f'/writing/{post["slug"]}/'
-    return page_head(f'{post["title"]} – Elliott Olson', post["summary"], post["sample"], path,
-                     image=f"{path}og.png", published=post["date"]) + f"""
+    image = f"{path}og.png" if (SHARE / f'{post["slug"]}.png').exists() else "/og.png"
+    return page_head(f'{post["title"]} – Elliott Olson', post["summary"], post["draft"], path,
+                     image=image, published=post["date"]) + f"""
   <main>
     <article>
       <header class="wrap article-head">
@@ -375,7 +381,7 @@ def article_page(post, following):
       </div>
     </article>
 {next_block}  </main>
-""" + page_foot(post["sample"])
+""" + page_foot(post["draft"])
 
 
 def home_rows(posts):
@@ -422,15 +428,34 @@ def write(path, text):
     path.write_text(text, encoding="utf-8")
 
 
-def main():
+def sitemap(posts):
+    """Every published page, for search engines."""
+    pages = ["/"] + (["/writing/"] + [f'/writing/{post["slug"]}/' for post in posts] if posts else [])
+    urls = "".join(f"\n  <url>\n    <loc>{SITE_URL}{page}</loc>\n  </url>" for page in pages)
+    return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}\n</urlset>\n'
+
+
+def main(drafts=False):
     posts = sorted((load_post(path) for path in CONTENT.glob("*.md")), key=lambda post: post["date"], reverse=True)
-    if not posts:
-        sys.exit("No posts found in content/writing/")
+    if not drafts:
+        posts = [post for post in posts if not post["draft"]]
 
     # Start from a clean copy of the hand-written site
     if DIST.exists():
         shutil.rmtree(DIST)
     shutil.copytree(SITE, DIST, ignore=shutil.ignore_patterns(".DS_Store"))
+
+    home = DIST / "index.html"
+    text = home.read_text(encoding="utf-8")
+    if HOME_START not in text or HOME_END not in text or not ONLY_WITH_POSTS.search(text):
+        sys.exit("site/index.html is missing its writing markers")
+    write(DIST / "sitemap.xml", sitemap([post for post in posts if not post["draft"]]))
+
+    if not posts:
+        # Nothing to read yet, so the home page makes no mention of Writing
+        write(home, ONLY_WITH_POSTS.sub("", text))
+        print(f"Built the site into {DIST.relative_to(ROOT)}/. There are no published posts, so Writing is hidden.")
+        return
 
     write(OUT / "index.html", index_page(posts))
     write(OUT / "feed.xml", feed(posts))
@@ -441,19 +466,16 @@ def main():
         if image.exists():
             shutil.copyfile(image, OUT / post["slug"] / "og.png")
 
-    home = DIST / "index.html"
-    text = home.read_text(encoding="utf-8")
-    if HOME_START not in text or HOME_END not in text:
-        sys.exit("site/index.html is missing the writing:start / writing:end markers")
+    text = ONLY_WITH_POSTS.sub(lambda block: block.group(1), text)
     before, rest = text.split(HOME_START, 1)
     after = rest.split(HOME_END, 1)[1]
     write(home, f"{before}{HOME_START}\n{home_rows(posts)}          {HOME_END}{after}")
 
-    print(f"Built the site, with {len(posts)} posts, into {DIST.relative_to(ROOT)}/")
-    missing = [post["slug"] for post in posts if not (SHARE / f'{post["slug"]}.png').exists()]
+    print(f"Built the site, with {len(posts)} {'post' if len(posts) == 1 else 'posts'}, into {DIST.relative_to(ROOT)}/")
+    missing = [post["slug"] for post in posts if not post["draft"] and not (SHARE / f'{post["slug"]}.png').exists()]
     if missing:
         print(f"No share image yet for: {', '.join(missing)}. Run scripts/make_share_images.py")
 
 
 if __name__ == "__main__":
-    main()
+    main(drafts="--drafts" in sys.argv)

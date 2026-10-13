@@ -18,12 +18,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Build the site
-        run: |
-          pip install -r requirements.txt
-          python3 scripts/build.py
-      - name: Check links
-        run: python3 scripts/check_links.py
+      - name: Install build tools
+        run: pip install -r requirements.txt
+      - name: Check links in the site as published
+        run: python3 scripts/build.py && python3 scripts/check_links.py
+      - name: Check links with drafts included
+        run: python3 scripts/build.py --drafts && python3 scripts/check_links.py
 
   lighthouse:
     name: Lighthouse
@@ -33,10 +33,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Build the site
-        run: |
-          pip install -r requirements.txt
-          python3 scripts/build.py
+      - name: Install build tools
+        run: pip install -r requirements.txt
+      - name: Build the site, drafts included, so the Writing pages are audited too
+        run: python3 scripts/build.py --drafts
       - name: Run Lighthouse
         uses: treosh/lighthouse-ci-action@v12
         with:

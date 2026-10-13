@@ -65,7 +65,8 @@ TEMPLATE = """<!doctype html>
 
 def main():
     remake = "--all" in sys.argv
-    posts = [load_post(path) for path in sorted(CONTENT.glob("*.md"))]
+    # Drafts are never shared, so they don't need an image
+    posts = [post for post in map(load_post, sorted(CONTENT.glob("*.md"))) if not post["draft"]]
     todo = [post for post in posts if remake or not (SHARE / f'{post["slug"]}.png').exists()]
     if not todo:
         print("Every post already has a share image. Use --all to remake them.")

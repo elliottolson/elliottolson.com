@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Preview the site locally.
 
-Builds the site into dist/ and serves it the way GitHub Pages does, including
-showing 404.html for any path that doesn't exist. The site is rebuilt whenever
+Builds the site into dist/, drafts included, and serves it the way GitHub Pages
+does, including showing 404.html for any path that doesn't exist. The site is rebuilt whenever
 a file in site/ or content/ has changed, so a browser refresh shows the edit.
 
     python3 scripts/serve.py [port]
@@ -20,7 +20,8 @@ lock = Lock()
 
 
 def newest_change():
-    files = (path for folder in (build.SITE, build.CONTENT) for path in folder.rglob("*") if path.is_file())
+    files = (path for folder in (build.SITE, build.CONTENT) for path in folder.rglob("*")
+             if path.is_file() and not path.name.startswith("."))
     return max(path.stat().st_mtime for path in files)
 
 
@@ -32,7 +33,7 @@ def rebuild_if_changed():
             return
         built_at = changed
         try:
-            build.main()
+            build.main(drafts=True)
         except SystemExit as problem:
             print(f"Build failed: {problem}")
 

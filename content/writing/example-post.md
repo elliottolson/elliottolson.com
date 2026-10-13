@@ -1,10 +1,10 @@
 ---
-title: What an evaluation score really tells you
+title: An example post
 date: 2026-10-06
 topic: Evaluation
 cover: waves
-summary: A single number hides a lot of decisions. Some notes on what goes into one, and what to ask before trusting it.
-sample: true
+summary: A draft that shows everything a post can contain. It appears in the local preview only, never on the live site.
+draft: true
 ---
 
 This is sample text, here to show how a post will look and read. The opening paragraph sets up the question the post answers, in two or three plain sentences, before the first heading.

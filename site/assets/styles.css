@@ -908,8 +908,9 @@ a { color: inherit; text-decoration: none; }
   .hero__scroll { display: none; }
 }
 
+/* On a phone there is room for three links, so Experience steps aside once Writing appears */
 @media (max-width: 480px) {
-  .nav__optional { display: none; }
+  .nav__links:has(a[href="/writing/"]) .nav__optional { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

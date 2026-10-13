@@ -38,7 +38,7 @@ Install the two build tools once:
 pip install -r requirements.txt
 ```
 
-Preview the site at <http://localhost:8000>. It rebuilds whenever a file changes, so a browser refresh shows the edit:
+Preview the site at <http://localhost:8000>. The preview includes drafts, and rebuilds whenever a file changes, so a browser refresh shows the edit:
 
 ```sh
 python3 scripts/serve.py
@@ -47,7 +47,7 @@ python3 scripts/serve.py
 Check for broken links:
 
 ```sh
-python3 scripts/build.py && python3 scripts/check_links.py
+python3 scripts/build.py --drafts && python3 scripts/check_links.py
 ```
 
 ## Writing a post
@@ -64,15 +64,17 @@ summary: One or two sentences shown on cards and under the title.
 ---
 ```
 
-`cover` picks the artwork: `waves`, `rings`, `beams` or `cells`. Add `sample: true` to mark a placeholder post, which hides it from search engines.
+`cover` picks the artwork: `waves`, `rings`, `beams` or `cells`. Add `draft: true` to keep a post out of the published site; it still appears in the local preview, marked as a draft.
+
+Until there is at least one published post, the site has no Writing section at all: no nav link, no list on the home page and no Writing page. Publishing the first post turns all three on.
 
 The body is ordinary Markdown, plus a few extras:
 
 - `A sentence.^[A note.]` adds a numbered note that opens in place.
 - A fenced code block is coloured by language; ` ```python title="retry.py" ` also names the file.
-- `::: table Caption`, `::: chart Caption`, `::: diagram Caption` and `::: aside` blocks, each closed with `:::`, add a captioned table, a chart drawn from JSON, an SVG diagram, or a boxed note. `content/writing/evaluation-scores.md` shows every one.
+- `::: table Caption`, `::: chart Caption`, `::: diagram Caption` and `::: aside` blocks, each closed with `:::`, add a captioned table, a chart drawn from JSON, an SVG diagram, or a boxed note. `content/writing/example-post.md`, a draft, shows every one.
 
-Then make the post's share image and commit it with the Markdown file:
+Then make the post's share image (drafts don't need one) and commit it with the Markdown file:
 
 ```sh
 python3 scripts/make_share_images.py
@@ -82,7 +84,7 @@ This needs Playwright (`pip install playwright`) and Google Chrome. The image is
 
 ## Deployment
 
-Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, so adding a post only takes committing its Markdown file and share image. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90.
+Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, so adding a post only takes committing its Markdown file and share image. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90. Both checks also run against a build with drafts included, so the Writing pages are tested even before anything is published.
 
 ## Monitoring
 
