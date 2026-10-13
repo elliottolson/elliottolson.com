@@ -78,7 +78,11 @@
 
   const nav = document.getElementById('nav');
   const navLinks = [...document.querySelectorAll('.nav__links a')];
-  const navTargets = navLinks.map((a) => document.querySelector(a.getAttribute('href')));
+  const navTargets = navLinks.map((a) => {
+    const href = a.getAttribute('href');
+    return href.startsWith('#') ? document.querySelector(href) : null;
+  });
+  const lastTarget = navTargets.reduce((last, section, i) => (section ? i : last), -1);
   let ticking = false;
   const update = () => {
     ticking = false;
@@ -92,8 +96,9 @@
     navTargets.forEach((section, i) => {
       if (section && section.getBoundingClientRect().top <= window.innerHeight * 0.4) current = i;
     });
-    if (max > 0 && y >= max - 2) current = navTargets.length - 1;
+    if (max > 0 && y >= max - 2) current = lastTarget;
     navLinks.forEach((a, i) => {
+      if (!navTargets[i]) return;
       if (i === current) a.setAttribute('aria-current', 'true');
       else a.removeAttribute('aria-current');
     });

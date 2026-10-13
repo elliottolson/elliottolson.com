@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Writing – Elliott Olson</title>
+  <meta name="description" content="Notes on evaluating models, building infrastructure, and the work around it.">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/writing.css">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="wrap nav__inner">
+      <a class="nav__name" href="/">Elliott Olson</a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="/#work">Work</a>
+        <a class="nav__optional" href="/#experience">Experience</a>
+        <a href="/writing/" aria-current="page">Writing</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="nav__progress" aria-hidden="true"></div>
+  </header>
+
+  <main>
+    <header class="page-head" data-field>
+      <canvas class="field" aria-hidden="true"></canvas>
+      <div class="wrap page-head__inner">
+        <p class="section__label rise" style="--i:0">Writing</p>
+        <h1 aria-label="Notes from the work.">
+          <span class="word" style="--i:1" aria-hidden="true">Notes</span>
+          <span class="word" style="--i:2" aria-hidden="true">from</span>
+          <span class="word" style="--i:3" aria-hidden="true">the</span>
+          <span class="word" style="--i:4" aria-hidden="true">work.</span>
+        </h1>
+        <p class="page-head__sub rise" style="--i:6">On evaluating models, building the infrastructure underneath them, and what I’ve learned along the way.</p>
+      </div>
+    </header>
+
+    <section class="wrap">
+        <a class="post post--featured reveal" href="/writing/evaluation-scores/" data-topic="evaluation">
+          <div class="cover" style="view-transition-name: cover-evaluation-scores"><canvas data-cover="waves" data-seed="evaluation-scores" aria-hidden="true"></canvas></div>
+          <div class="post__text">
+            <p class="post__meta"><span>Evaluation</span><span>Oct 6, 2026</span><span>2 min read</span></p>
+            <h2 class="post__title">What an evaluation score really tells you</h2>
+            <p class="post__excerpt">A single number hides a lot of decisions. Some notes on what goes into one, and what to ask before trusting it.</p>
+            <span class="post__more">Read <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+
+      <div class="posts-head reveal">
+        <p class="posts-head__count">4 posts</p>
+        <div class="chips" role="group" aria-label="Filter by topic"><button class="chip" type="button" data-topic="all" aria-pressed="true">All</button><button class="chip" type="button" data-topic="performance" aria-pressed="false">Performance</button><button class="chip" type="button" data-topic="architecture" aria-pressed="false">Architecture</button><button class="chip" type="button" data-topic="evaluation" aria-pressed="false">Evaluation</button><button class="chip" type="button" data-topic="career" aria-pressed="false">Career</button></div>
+      </div>
+
+      <div class="posts">
+        <a class="post reveal" href="/writing/where-milliseconds-go/" data-topic="performance">
+          <div class="cover" style="view-transition-name: cover-where-milliseconds-go"><canvas data-cover="beams" data-seed="where-milliseconds-go" aria-hidden="true"></canvas></div>
+          <div class="post__text">
+            <p class="post__meta"><span>Performance</span><span>Sep 18, 2026</span><span>1 min read</span></p>
+            <h2 class="post__title">Where the milliseconds go</h2>
+            <p class="post__excerpt">Latency rarely has one cause. A way of breaking a request down until the slow part has nowhere left to hide.</p>
+            <span class="post__more">Read <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+        <a class="post reveal" href="/writing/contract-between-systems/" data-topic="architecture">
+          <div class="cover" style="view-transition-name: cover-contract-between-systems"><canvas data-cover="cells" data-seed="contract-between-systems" aria-hidden="true"></canvas></div>
+          <div class="post__text">
+            <p class="post__meta"><span>Architecture</span><span>Aug 27, 2026</span><span>1 min read</span></p>
+            <h2 class="post__title">A contract between systems</h2>
+            <p class="post__excerpt">Why a small, boring interface is often the thing that lets everything around it change quickly.</p>
+            <span class="post__more">Read <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+        <a class="post reveal" href="/writing/boring-nightly-run/" data-topic="evaluation">
+          <div class="cover" style="view-transition-name: cover-boring-nightly-run"><canvas data-cover="rings" data-seed="boring-nightly-run" aria-hidden="true"></canvas></div>
+          <div class="post__text">
+            <p class="post__meta"><span>Evaluation</span><span>Jul 30, 2026</span><span>1 min read</span></p>
+            <h2 class="post__title">The value of a boring nightly run</h2>
+            <p class="post__excerpt">The most useful automation is the kind nobody thinks about until the morning it catches something.</p>
+            <span class="post__more">Read <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+        <a class="post reveal" href="/writing/intern-to-senior/" data-topic="career">
+          <div class="cover" style="view-transition-name: cover-intern-to-senior"><canvas data-cover="waves" data-seed="intern-to-senior" aria-hidden="true"></canvas></div>
+          <div class="post__text">
+            <p class="post__meta"><span>Career</span><span>Jun 12, 2026</span><span>1 min read</span></p>
+            <h2 class="post__title">What changed between intern and senior</h2>
+            <p class="post__excerpt">Looking back at six years of the same job title getting longer, and what actually shifted along the way.</p>
+            <span class="post__more">Read <span aria-hidden="true">→</span></span>
+          </div>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>© 2026 Elliott Olson</span>
+      <span>Bellevue, Washington</span>
+    </div>
+  </footer>
+
+  <div class="proto">Sample content</div>
+
+  <script src="/assets/main.js" defer></script>
+  <script src="/assets/writing.js" defer></script>
+  <script data-goatcounter="https://elliottolson.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
