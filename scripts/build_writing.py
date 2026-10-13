@@ -189,8 +189,11 @@ def format_date(day):
     return f"{day:%b} {day.day}, {day.year}"
 
 
-def page_head(title, description, noindex):
+def page_head(title, description, noindex, path, image="/og.png", published=None):
+    """The top of every page. `path` and `image` describe the page to search engines and link previews."""
     robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
+    article = f'\n  <meta property="article:published_time" content="{published.isoformat()}">' if published else ""
+    share_title = html.escape(title.removesuffix(" – Elliott Olson"), quote=True)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -198,6 +201,16 @@ def page_head(title, description, noindex):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{html.escape(title)}</title>
   <meta name="description" content="{html.escape(description, quote=True)}">{robots}
+  <link rel="canonical" href="{SITE_URL}{path}">
+  <meta property="og:title" content="{share_title}">
+  <meta property="og:description" content="{html.escape(description, quote=True)}">
+  <meta property="og:type" content="{"article" if published else "website"}">
+  <meta property="og:url" content="{SITE_URL}{path}">
+  <meta property="og:site_name" content="Elliott Olson">
+  <meta property="og:image" content="{SITE_URL}{image}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">{article}
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
@@ -282,7 +295,7 @@ def index_page(posts):
 {"".join(card(post) for post in rest)}      </div>
 """ if rest else '\n      <div class="posts"></div>\n'
     sample = any(post["sample"] for post in posts)
-    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, sample) + f"""
+    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, sample, "/writing/") + f"""
   <main>
     <header class="page-head" data-field>
       <canvas class="field" aria-hidden="true"></canvas>
@@ -320,7 +333,9 @@ def article_page(post, following):
       </a>
     </div>
 """ if following else ""
-    return page_head(f'{post["title"]} – Elliott Olson', post["summary"], post["sample"]) + f"""
+    path = f'/writing/{post["slug"]}/'
+    return page_head(f'{post["title"]} – Elliott Olson', post["summary"], post["sample"], path,
+                     image=f"{path}og.png", published=post["date"]) + f"""
   <main>
     <article>
       <header class="wrap article-head">
@@ -422,6 +437,9 @@ def main():
     write(home, f"{before}{HOME_START}\n{home_rows(posts)}          {HOME_END}{after}")
 
     print(f"Built {len(posts)} posts into {OUT.relative_to(ROOT)}/")
+    missing = [post["slug"] for post in posts if not (OUT / post["slug"] / "og.png").exists()]
+    if missing:
+        print(f"No share image yet for: {', '.join(missing)}. Run scripts/make_share_images.py")
 
 
 if __name__ == "__main__":
