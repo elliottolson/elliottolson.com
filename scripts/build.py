@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Build the Writing section from the Markdown files in content/writing/.
+"""Build the site into dist/, ready to publish.
+
+Everything in site/ is copied across as it is. The Writing section is then built
+from the Markdown files in content/writing/.
 
 Each post is a Markdown file with a short header:
 
@@ -37,10 +40,10 @@ Beyond ordinary Markdown, a post can use:
     print("Code blocks are coloured; the title is optional.")
     ```
 
-Running this script writes the pages into site/writing/ and updates the list of
-latest posts on the home page. The output is committed alongside the source.
+Running this script writes the finished site into dist/, which is not committed:
+GitHub runs the same script when it publishes the site.
 
-    python3 scripts/build_writing.py
+    python3 scripts/build.py
 """
 import html
 import json
@@ -60,7 +63,9 @@ from pygments.util import ClassNotFound
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content" / "writing"
 SITE = ROOT / "site"
-OUT = SITE / "writing"
+DIST = ROOT / "dist"
+OUT = DIST / "writing"
+SHARE = CONTENT / "share"
 SITE_URL = "https://elliottolson.com"
 COVERS = ("waves", "rings", "beams", "cells")
 HOME_START, HOME_END = "<!-- writing:start -->", "<!-- writing:end -->"
@@ -422,20 +427,21 @@ def main():
     if not posts:
         sys.exit("No posts found in content/writing/")
 
-    # Drop pages for posts that no longer exist
-    slugs = {post["slug"] for post in posts}
-    if OUT.exists():
-        for folder in OUT.iterdir():
-            if folder.is_dir() and folder.name not in slugs:
-                shutil.rmtree(folder)
+    # Start from a clean copy of the hand-written site
+    if DIST.exists():
+        shutil.rmtree(DIST)
+    shutil.copytree(SITE, DIST, ignore=shutil.ignore_patterns(".DS_Store"))
 
     write(OUT / "index.html", index_page(posts))
     write(OUT / "feed.xml", feed(posts))
     for position, post in enumerate(posts):
         following = posts[(position + 1) % len(posts)] if len(posts) > 1 else None
         write(OUT / post["slug"] / "index.html", article_page(post, following))
+        image = SHARE / f'{post["slug"]}.png'
+        if image.exists():
+            shutil.copyfile(image, OUT / post["slug"] / "og.png")
 
-    home = SITE / "index.html"
+    home = DIST / "index.html"
     text = home.read_text(encoding="utf-8")
     if HOME_START not in text or HOME_END not in text:
         sys.exit("site/index.html is missing the writing:start / writing:end markers")
@@ -443,8 +449,8 @@ def main():
     after = rest.split(HOME_END, 1)[1]
     write(home, f"{before}{HOME_START}\n{home_rows(posts)}          {HOME_END}{after}")
 
-    print(f"Built {len(posts)} posts into {OUT.relative_to(ROOT)}/")
-    missing = [post["slug"] for post in posts if not (OUT / post["slug"] / "og.png").exists()]
+    print(f"Built the site, with {len(posts)} posts, into {DIST.relative_to(ROOT)}/")
+    missing = [post["slug"] for post in posts if not (SHARE / f'{post["slug"]}.png').exists()]
     if missing:
         print(f"No share image yet for: {', '.join(missing)}. Run scripts/make_share_images.py")
 

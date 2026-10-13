@@ -10,23 +10,18 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Writing is built
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install build tools
-        run: pip install -r requirements.txt
-      - name: Rebuild the Writing pages
-        run: python3 scripts/build_writing.py
-      - name: Check the committed pages are up to date
-        run: git diff --exit-code -- site
-
   links:
     name: Links
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build the site
+        run: |
+          pip install -r requirements.txt
+          python3 scripts/build.py
       - name: Check links
         run: python3 scripts/check_links.py
 
@@ -35,6 +30,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build the site
+        run: |
+          pip install -r requirements.txt
+          python3 scripts/build.py
       - name: Run Lighthouse
         uses: treosh/lighthouse-ci-action@v12
         with:

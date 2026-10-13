@@ -2,8 +2,8 @@
 """Make the preview image shown when a post is shared (in iMessage, LinkedIn, Slack and so on).
 
 Each image is the post's cover artwork with its topic and title on top, saved
-as site/writing/<post>/og.png. Images are committed, so this only needs running
-when a post is added or its title, topic or cover changes.
+as content/writing/share/<post>.png. Images are committed, so this only needs
+running when a post is added or its title, topic or cover changes.
 
     python3 scripts/make_share_images.py          make images for posts that have none
     python3 scripts/make_share_images.py --all    remake every image
@@ -17,7 +17,7 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-from build_writing import CONTENT, OUT, SITE, load_post
+from build import CONTENT, ROOT, SHARE, SITE, load_post
 
 TEMPLATE = """<!doctype html>
 <html>
@@ -66,7 +66,7 @@ TEMPLATE = """<!doctype html>
 def main():
     remake = "--all" in sys.argv
     posts = [load_post(path) for path in sorted(CONTENT.glob("*.md"))]
-    todo = [post for post in posts if remake or not (OUT / post["slug"] / "og.png").exists()]
+    todo = [post for post in posts if remake or not (SHARE / f'{post["slug"]}.png').exists()]
     if not todo:
         print("Every post already has a share image. Use --all to remake them.")
         return
@@ -87,10 +87,10 @@ def main():
             ), encoding="utf-8")
             page.goto(source.as_uri())
             page.wait_for_timeout(500)
-            target = OUT / post["slug"] / "og.png"
+            target = SHARE / f'{post["slug"]}.png'
             target.parent.mkdir(parents=True, exist_ok=True)
             page.screenshot(path=str(target))
-            print(f"Made {target.relative_to(SITE.parent)}")
+            print(f"Made {target.relative_to(ROOT)}")
         browser.close()
 
 

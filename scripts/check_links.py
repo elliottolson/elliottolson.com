@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check every link in the site's HTML files.
+"""Check every link in the built site (run scripts/build.py first).
 
 Internal links must point at a file (and anchor) that exists. External links
 must not be dead: a 404, 410 or failed connection fails the check, while other
@@ -12,7 +12,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urldefrag, urlparse
 
-ROOT = Path(__file__).resolve().parents[1] / "site"
+ROOT = Path(__file__).resolve().parents[1] / "dist"
 SITE = "https://elliottolson.com"
 SKIP_HOSTS = {"www.linkedin.com", "linkedin.com"}  # blocks automated requests
 USER_AGENT = "Mozilla/5.0 (compatible; elliottolson.com link check)"
@@ -58,6 +58,8 @@ def fetch(url):
 
 
 def main():
+    if not ROOT.exists():
+        sys.exit("There is no dist/ folder yet. Run scripts/build.py first.")
     pages = {p: parse(p) for p in sorted(ROOT.rglob("*.html"))}
     errors, warnings, external = [], [], {}
 
