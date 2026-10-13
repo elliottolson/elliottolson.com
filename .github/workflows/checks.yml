@@ -10,6 +10,18 @@ permissions:
   contents: read
 
 jobs:
+  build:
+    name: Writing is built
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build tools
+        run: pip install -r requirements.txt
+      - name: Rebuild the Writing pages
+        run: python3 scripts/build_writing.py
+      - name: Check the committed pages are up to date
+        run: git diff --exit-code -- site
+
   links:
     name: Links
     runs-on: ubuntu-latest
