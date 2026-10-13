@@ -132,7 +132,9 @@
       if (!heading.id) heading.id = heading.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
       const link = document.createElement('a');
       link.href = `#${heading.id}`;
-      link.textContent = heading.textContent;
+      link.textContent = [...heading.childNodes]
+        .filter((node) => !(node.classList && node.classList.contains('anchor')))
+        .map((node) => node.textContent).join('').trim();
       const item = document.createElement('li');
       item.append(link);
       toc.append(item);
@@ -385,6 +387,19 @@
     }
   }
   document.querySelectorAll('figure.chart').forEach(createChart);
+
+  // Section links: clicking the # beside a heading also copies a link to it
+  document.querySelectorAll('.prose .anchor').forEach((anchor) => {
+    anchor.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(`${location.origin}${location.pathname}${anchor.getAttribute('href')}`);
+        anchor.classList.add('is-copied');
+        setTimeout(() => anchor.classList.remove('is-copied'), 1600);
+      } catch (error) {
+        // The link still works as a normal jump if copying isn't allowed
+      }
+    });
+  });
 
   // Copy buttons, for the page link and for code blocks
   document.querySelectorAll('[data-copy]').forEach((button) => {

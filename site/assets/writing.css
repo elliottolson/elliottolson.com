@@ -300,6 +300,31 @@
   letter-spacing: -0.02em;
 }
 
+/* Section links: a small # beside each heading, shown on hover */
+.prose .anchor {
+  margin-left: 0.35em;
+  font-weight: 400;
+  text-decoration: none;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease), color 0.25s var(--ease);
+}
+.prose h2:hover .anchor,
+.prose h3:hover .anchor,
+.prose .anchor:focus-visible,
+.prose .anchor.is-copied { opacity: 1; }
+.prose .anchor:hover { color: var(--fg); }
+.prose .anchor.is-copied::after {
+  content: "Link copied";
+  margin-left: 0.7em;
+  font-size: 13px;
+  letter-spacing: 0;
+  vertical-align: middle;
+}
+@media (hover: none) {
+  .prose .anchor { opacity: 0.55; }
+}
+
 .prose a {
   text-decoration: underline;
   text-decoration-color: var(--line-strong);

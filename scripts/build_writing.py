@@ -145,7 +145,11 @@ def render_body(text, name):
     text = re.sub(r'^```(\w+)?(?: +title="([^"]*)")?\n(.*?)\n```[ \t]*$', code, text, flags=re.S | re.M)
     text = re.sub(r"\^\[(.+?)\]", note, text)
 
-    body = markdown.markdown(text, extensions=["tables", "smarty", "toc"])
+    # Every heading gets an id and a small link for sharing that section
+    body = markdown.markdown(text, extensions=["tables", "smarty", "toc"], extension_configs={
+        "toc": {"permalink": "#", "permalink_class": "anchor", "permalink_title": "Copy a link to this section"},
+    })
+    body = body.replace(' title="Copy a link to this section">', ' aria-label="Copy a link to this section">')
     for index, block in enumerate(blocks):
         body = body.replace(f"<p>@@BLOCK{index}@@</p>", block)
     if "@@BLOCK" in body:
