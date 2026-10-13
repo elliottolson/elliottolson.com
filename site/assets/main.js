@@ -78,8 +78,10 @@
 
   const nav = document.getElementById('nav');
   const navLinks = [...document.querySelectorAll('.nav__links a')];
+  // A link either points at a section on this page (#work) or names one it stands for (data-section)
   const navTargets = navLinks.map((a) => {
     const href = a.getAttribute('href');
+    if (a.dataset.section) return document.getElementById(a.dataset.section);
     return href.startsWith('#') ? document.querySelector(href) : null;
   });
   const lastTarget = navTargets.reduce((last, section, i) => (section ? i : last), -1);
