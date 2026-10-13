@@ -15,6 +15,7 @@
 ## Links
 
 - [Website](https://elliottolson.com/)
+- [Email](mailto:hello@elliottolson.com)
 - [LinkedIn](https://www.linkedin.com/in/elliottolson)
 - [GitHub](https://github.com/elliottolson)
 - [Patent](https://patents.google.com/patent/US12657393B1/en)

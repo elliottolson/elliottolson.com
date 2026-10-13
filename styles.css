@@ -891,6 +891,7 @@ a { color: inherit; text-decoration: none; }
   .row { grid-template-columns: 1fr; gap: 4px; }
   .row__where { text-align: left; }
   .row:hover .row__what { transform: none; }
+  .contact__links { flex-direction: column; align-items: flex-start; }
   .hero__scroll { display: none; }
 }
 
