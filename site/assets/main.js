@@ -123,6 +123,47 @@
   window.addEventListener('resize', onScroll);
   update();
 
+  // Have the next page ready before it is clicked.
+  // Where the browser supports it, every page linked from this one is fetched straight away, and the
+  // one under the pointer is fully prepared in the background, so the click only has to reveal it.
+  const sitePages = { and: [
+    { href_matches: '/*' },
+    { not: { selector_matches: 'a[href^="#"]' } },
+    { not: { href_matches: '/*.xml' } },
+    { not: { href_matches: '/(linkedin|github|patent|paper)/*' } },
+  ] };
+  if (HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+    const rules = document.createElement('script');
+    rules.type = 'speculationrules';
+    rules.textContent = JSON.stringify({
+      prefetch: [{ where: sitePages, eagerness: 'immediate' }],
+      prerender: [{ where: sitePages, eagerness: 'moderate' }],
+    });
+    document.head.append(rules);
+  } else {
+    // Elsewhere, fetch the page (and what it needs) into the cache as soon as its link is hovered or touched
+    const warmed = new Set();
+    const fetchQuietly = (url) => {
+      if (warmed.has(url)) return;
+      warmed.add(url);
+      fetch(url, { credentials: 'same-origin' }).catch(() => {});
+    };
+    const warm = (event) => {
+      const link = event.target.closest && event.target.closest('a[href]');
+      if (!link) return;
+      const url = new URL(link.href);
+      if (url.origin !== location.origin || url.pathname === location.pathname) return;
+      if (/\.xml$|^\/(linkedin|github|patent|paper)\//.test(url.pathname)) return;
+      fetchQuietly(url.pathname);
+      if (url.pathname.startsWith('/writing/')) {
+        fetchQuietly('/assets/writing.css');
+        fetchQuietly('/assets/writing.js');
+      }
+    };
+    document.addEventListener('pointerover', warm, { passive: true });
+    document.addEventListener('touchstart', warm, { passive: true });
+  }
+
   // Tiles: soft highlight that follows the pointer
   document.querySelectorAll('.tile').forEach((tile) => {
     tile.addEventListener('pointermove', (e) => {
@@ -142,6 +183,7 @@
   readColors();
 
   const GAP = 30;
+  const LEVELS = 48;
   const RIPPLE_SPEED = 0.24;
   const RIPPLE_LIFE = 3400;
 
@@ -175,6 +217,8 @@
       pointer.y += (pointer.ty - pointer.y) * 0.12;
       ripples = ripples.filter((r) => time - r.start < RIPPLE_LIFE);
       ctx.clearRect(0, 0, width, height);
+      // Dots are grouped by colour and brightness, so each group is painted in one go
+      const groups = new Map();
 
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
@@ -199,14 +243,18 @@
 
           const alpha = Math.min(1, 0.14 + lift * 0.42 + near * 0.75);
           const radius = 1 + lift * 0.5 + near * 1.3;
-          ctx.fillStyle = near > 0.12 || lift > 0.72
-            ? `rgba(${glow},${alpha})`
-            : `rgba(${dot},${alpha})`;
-          ctx.beginPath();
-          ctx.arc(px, py, radius, 0, Math.PI * 2);
-          ctx.fill();
+          const key = Math.round(alpha * LEVELS) + (near > 0.12 || lift > 0.72 ? LEVELS + 1 : 0);
+          let path = groups.get(key);
+          if (!path) groups.set(key, (path = new Path2D()));
+          path.moveTo(px + radius, py);
+          path.arc(px, py, radius, 0, Math.PI * 2);
         }
       }
+      groups.forEach((path, key) => {
+        const accent = key > LEVELS;
+        ctx.fillStyle = `rgba(${accent ? glow : dot},${(accent ? key - LEVELS - 1 : key) / LEVELS})`;
+        ctx.fill(path);
+      });
     };
 
     const loop = (time) => {

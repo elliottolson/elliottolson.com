@@ -11,6 +11,7 @@
   };
   readColors();
 
+  const LEVELS = 48;
   const hash = (text) => {
     let h = 2166136261;
     for (const ch of text) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
@@ -56,18 +57,28 @@
       const t = time * 0.00045 + seed * 40;
       const aspect = width / height;
       ctx.clearRect(0, 0, width, height);
+      // Dots are grouped by colour and brightness, so each group is painted in one go
+      const groups = new Map();
       for (let cy = 0; cy < rows; cy++) {
         for (let cx = 0; cx < cols; cx++) {
           const u = cx / (cols - 1);
           const v = cy / (rows - 1);
           const value = Math.min(1, Math.max(0, pattern(u, v, u * aspect, t, seed, cx, cy)));
           const shaped = value * value;
-          ctx.fillStyle = value > 0.95 ? `rgba(${glow},${0.2 + shaped * 0.8})` : `rgba(${dot},${0.08 + shaped * 0.62})`;
-          ctx.beginPath();
-          ctx.arc(cx * gap, cy * gap, gap * (0.07 + shaped * 0.36), 0, Math.PI * 2);
-          ctx.fill();
+          const accent = value > 0.95;
+          const key = Math.round((accent ? 0.2 + shaped * 0.8 : 0.08 + shaped * 0.62) * LEVELS) + (accent ? LEVELS + 1 : 0);
+          const radius = gap * (0.07 + shaped * 0.36);
+          let path = groups.get(key);
+          if (!path) groups.set(key, (path = new Path2D()));
+          path.moveTo(cx * gap + radius, cy * gap);
+          path.arc(cx * gap, cy * gap, radius, 0, Math.PI * 2);
         }
       }
+      groups.forEach((path, key) => {
+        const accent = key > LEVELS;
+        ctx.fillStyle = `rgba(${accent ? glow : dot},${(accent ? key - LEVELS - 1 : key) / LEVELS})`;
+        ctx.fill(path);
+      });
     };
 
     const loop = (time) => {
