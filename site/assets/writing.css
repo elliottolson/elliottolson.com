@@ -285,6 +285,14 @@
 .prose > * + * { margin-top: 1.35em; }
 .prose p, .prose li { color: color-mix(in srgb, var(--fg) 82%, transparent); }
 
+.prose > p.lead {
+  font-size: 1.22em;
+  line-height: 1.5;
+  letter-spacing: -0.018em;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
 .prose h2 {
   margin-top: 2.2em;
   font-size: 1.7em;
@@ -416,6 +424,12 @@
   font-size: 14px;
   line-height: 1.45;
   color: var(--muted);
+}
+.figure__label {
+  margin-right: 0.7em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
 }
 
 .callout {

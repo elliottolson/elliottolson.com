@@ -114,8 +114,8 @@ def render_body(text, name):
 
     def caption(kind, text):
         numbers[kind] += 1
-        label = f"{kind} {numbers[kind]}."
-        return f"<figcaption>{label} {render_inline(text)}</figcaption>" if text else f"<figcaption>{label}</figcaption>"
+        label = f'<span class="figure__label">{kind} {numbers[kind]}</span>'
+        return f"<figcaption>{label}{render_inline(text)}</figcaption>" if text else f"<figcaption>{label}</figcaption>"
 
     def directive(match):
         kind, text, inner = match.group(1), (match.group(2) or "").strip(), match.group(3)
@@ -152,6 +152,9 @@ def render_body(text, name):
     body = body.replace(' title="Copy a link to this section">', ' aria-label="Copy a link to this section">')
     for index, block in enumerate(blocks):
         body = body.replace(f"<p>@@BLOCK{index}@@</p>", block)
+    # The opening paragraph is set a little larger
+    if body.startswith("<p>"):
+        body = body.replace("<p>", '<p class="lead">', 1)
     if "@@BLOCK" in body:
         sys.exit(f"{name}: a block could not be placed; check the blank lines around ':::' and code blocks")
     return body
