@@ -250,7 +250,7 @@
     const render = () => {
       const width = plot.clientWidth;
       if (!width) return;
-      const height = width < 480 ? 230 : 290;
+      const height = width < 480 ? 230 : width > 800 ? 400 : 290;
       const m = { top: 18, right: isLine ? 46 : 8, bottom: 28, left: 40 };
       const iw = width - m.left - m.right;
       const ih = height - m.top - m.bottom;
@@ -386,7 +386,40 @@
       io.observe(figure);
     }
   }
-  document.querySelectorAll('figure.chart').forEach(createChart);
+  // Click to enlarge: tables, charts and diagrams open large over a dimmed page
+  const figures = [...document.querySelectorAll('.prose figure.table, .prose figure.chart, .prose figure.diagram')];
+  if (figures.length && window.HTMLDialogElement) {
+    const dialog = htmlEl('dialog', 'lightbox');
+    dialog.setAttribute('aria-label', 'Enlarged figure');
+    const close = htmlEl('button', 'ghost-button lightbox__close', 'Close');
+    close.type = 'button';
+    const stage = htmlEl('div', 'lightbox__stage prose');
+    dialog.append(close, stage);
+    document.body.append(dialog);
+    close.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => stage.replaceChildren());
+
+    figures.forEach((figure) => {
+      // Keep an untouched copy, taken before a chart is drawn into the figure
+      const source = figure.cloneNode(true);
+      const button = htmlEl('button', 'figure__expand');
+      button.type = 'button';
+      button.setAttribute('aria-label', 'Enlarge');
+      const icon = svgEl('svg', { viewBox: '0 0 16 16', 'aria-hidden': 'true' });
+      icon.append(svgEl('path', { d: 'M9.5 2.5h4v4M13.5 2.5 9 7M6.5 13.5h-4v-4M2.5 13.5 7 9' }));
+      button.append(icon);
+      button.addEventListener('click', () => {
+        const copy = source.cloneNode(true);
+        stage.replaceChildren(copy);
+        dialog.showModal();
+        if (copy.classList.contains('chart')) createChart(copy);
+      });
+      figure.append(button);
+    });
+  }
+
+  document.querySelectorAll('.article-layout figure.chart').forEach(createChart);
 
   // Section links: clicking the # beside a heading also copies a link to it
   document.querySelectorAll('.prose .anchor').forEach((anchor) => {
