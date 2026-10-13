@@ -66,12 +66,10 @@
   const words = [];
   if (statement && !reduceMotion) {
     const text = statement.textContent.trim();
-    statement.setAttribute('aria-label', text);
     statement.textContent = '';
     text.split(/\s+/).forEach((word, i, all) => {
       const span = document.createElement('span');
       span.className = 'w';
-      span.setAttribute('aria-hidden', 'true');
       span.textContent = word;
       statement.append(span, i < all.length - 1 ? ' ' : '');
       words.push(span);
