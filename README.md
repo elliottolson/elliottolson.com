@@ -2,20 +2,41 @@
 
 Source for my personal website, [elliottolson.com](https://elliottolson.com).
 
-It's a single static page in plain HTML, CSS and JavaScript, with no build step or dependencies. GitHub Pages serves the `main` branch as is.
+It's a single static page in plain HTML, CSS and JavaScript, with no build step and no dependencies.
 
-## Preview locally
+## Structure
 
-```sh
-python3 -m http.server 8000
+```
+site/                  Everything that gets published
+  index.html           The page
+  404.html             Shown for any URL that doesn't exist
+  assets/              Styles and scripts
+  linkedin/ github/    Short links, e.g. elliottolson.com/linkedin
+  patent/ paper/
+  og.png               Preview image used when the site is shared
+  robots.txt, sitemap.xml, llms.txt
+scripts/
+  serve.py             Local preview server
+  check_links.py       Link checker
+.github/workflows/
+  deploy.yml           Publishes site/ to GitHub Pages
+  checks.yml           Link check and Lighthouse audit
 ```
 
-Then open <http://localhost:8000>.
+## Development
 
-## Files
+Preview the site at <http://localhost:8000>:
 
-- `index.html`, `styles.css`, `main.js`: the page, its styles, and its animations
-- `404.html`: shown for any URL that doesn't exist
-- `og.png`: the preview image used when the site is shared
-- `CNAME`: the custom domain for GitHub Pages
-- `robots.txt`, `sitemap.xml`, `llms.txt`: files for search engines and other crawlers
+```sh
+python3 scripts/serve.py
+```
+
+Check for broken links:
+
+```sh
+python3 scripts/check_links.py
+```
+
+## Deployment
+
+Every push to `main` publishes the `site/` folder to GitHub Pages. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90.
