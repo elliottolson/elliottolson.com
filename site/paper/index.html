@@ -6,8 +6,16 @@
   <title>Redirecting to the Nova technical report</title>
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://arxiv.org/abs/2506.12103">
+  <script>
+    // Count the visit, then redirect
+    try {
+      navigator.sendBeacon("https://elliottolson.goatcounter.com/count?p=" + encodeURIComponent("/paper") +
+        "&t=" + encodeURIComponent("Short link: paper") + "&r=" + encodeURIComponent(document.referrer) +
+        "&rnd=" + Math.random().toString(36).slice(2));
+    } catch (error) {}
+    location.replace("https://arxiv.org/abs/2506.12103");
+  </script>
   <meta http-equiv="refresh" content="0; url=https://arxiv.org/abs/2506.12103">
-  <script>location.replace("https://arxiv.org/abs/2506.12103");</script>
 </head>
 <body>
   <p>Redirecting to <a href="https://arxiv.org/abs/2506.12103">the Nova technical report</a>.</p>

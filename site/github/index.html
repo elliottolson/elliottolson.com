@@ -6,8 +6,16 @@
   <title>Redirecting to GitHub</title>
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://github.com/elliottolson">
+  <script>
+    // Count the visit, then redirect
+    try {
+      navigator.sendBeacon("https://elliottolson.goatcounter.com/count?p=" + encodeURIComponent("/github") +
+        "&t=" + encodeURIComponent("Short link: github") + "&r=" + encodeURIComponent(document.referrer) +
+        "&rnd=" + Math.random().toString(36).slice(2));
+    } catch (error) {}
+    location.replace("https://github.com/elliottolson");
+  </script>
   <meta http-equiv="refresh" content="0; url=https://github.com/elliottolson">
-  <script>location.replace("https://github.com/elliottolson");</script>
 </head>
 <body>
   <p>Redirecting to <a href="https://github.com/elliottolson">GitHub</a>.</p>

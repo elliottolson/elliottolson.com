@@ -6,8 +6,16 @@
   <title>Redirecting to LinkedIn</title>
   <meta name="robots" content="noindex">
   <link rel="canonical" href="https://www.linkedin.com/in/elliottolson">
+  <script>
+    // Count the visit, then redirect
+    try {
+      navigator.sendBeacon("https://elliottolson.goatcounter.com/count?p=" + encodeURIComponent("/linkedin") +
+        "&t=" + encodeURIComponent("Short link: linkedin") + "&r=" + encodeURIComponent(document.referrer) +
+        "&rnd=" + Math.random().toString(36).slice(2));
+    } catch (error) {}
+    location.replace("https://www.linkedin.com/in/elliottolson");
+  </script>
   <meta http-equiv="refresh" content="0; url=https://www.linkedin.com/in/elliottolson">
-  <script>location.replace("https://www.linkedin.com/in/elliottolson");</script>
 </head>
 <body>
   <p>Redirecting to <a href="https://www.linkedin.com/in/elliottolson">LinkedIn</a>.</p>
