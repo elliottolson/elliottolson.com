@@ -18,9 +18,11 @@ site/                  Everything that gets published
 scripts/
   serve.py             Local preview server
   check_links.py       Link checker
+  check_uptime.sh      Checks the live site and its certificate
 .github/workflows/
   deploy.yml           Publishes site/ to GitHub Pages
   checks.yml           Link check and Lighthouse audit
+  uptime.yml           Hourly check of the live site
 ```
 
 ## Development
@@ -40,3 +42,9 @@ python3 scripts/check_links.py
 ## Deployment
 
 Every push to `main` publishes the `site/` folder to GitHub Pages. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90.
+
+## Monitoring
+
+An hourly workflow runs `scripts/check_uptime.sh`, which fails if the site is down, stops redirecting to HTTPS, or has a certificate within 14 days of expiry.
+
+Visits, link clicks and short link use are counted with [GoatCounter](https://www.goatcounter.com), which sets no cookies and collects no personal data.
