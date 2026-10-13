@@ -33,6 +33,10 @@ Beyond ordinary Markdown, a post can use:
     A boxed note.
     :::
 
+    ```python title="retry.py"
+    print("Code blocks are coloured; the title is optional.")
+    ```
+
 Running this script writes the pages into site/writing/ and updates the list of
 latest posts on the home page. The output is committed alongside the source.
 
@@ -47,6 +51,10 @@ from datetime import date
 from pathlib import Path
 
 import markdown
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import TextLexer, get_lexer_by_name
+from pygments.util import ClassNotFound
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content" / "writing"
@@ -150,11 +158,17 @@ def render_inline(text):
 
 
 def render_code(source, language, title):
-    label = html.escape(title or language.capitalize() or "Code")
+    """A code block, coloured at build time so the page needs no highlighting script."""
+    try:
+        lexer = get_lexer_by_name(language) if language else TextLexer()
+    except ClassNotFound:
+        sys.exit(f"Unknown code language '{language}'")
+    label = html.escape(title or (lexer.name if language else "Code"))
+    coloured = highlight(source, lexer, HtmlFormatter(nowrap=True)).rstrip("\n")
     return (
         '<div class="code">\n'
         f'<div class="code__bar"><span>{label}</span><button class="ghost-button" type="button" data-copy="code">Copy</button></div>\n'
-        f"<pre><code>{html.escape(source)}</code></pre>\n"
+        f"<pre><code>{coloured}</code></pre>\n"
         "</div>"
     )
 

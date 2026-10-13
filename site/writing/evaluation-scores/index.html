@@ -58,15 +58,15 @@
 <p>Inline code such as <code>max_attempts</code> sits within a sentence. Longer examples get their own block, with a button to copy them:</p>
 <div class="code">
 <div class="code__bar"><span>retry.py</span><button class="ghost-button" type="button" data-copy="code">Copy</button></div>
-<pre><code>def with_retries(call, max_attempts=3):
-    &quot;&quot;&quot;Retry a flaky call a few times before giving up.&quot;&quot;&quot;
-    for attempt in range(1, max_attempts + 1):
-        try:
-            return call()
-        except TransientError as error:
-            if attempt == max_attempts:
-                raise
-            print(f&quot;Attempt {attempt} failed: {error}&quot;)</code></pre>
+<pre><code><span class="k">def</span><span class="w"> </span><span class="nf">with_retries</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retry a flaky call a few times before giving up.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_attempts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">call</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">TransientError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_attempts</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Attempt </span><span class="si">{</span><span class="n">attempt</span><span class="si">}</span><span class="s2"> failed: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></code></pre>
 </div>
 <p>The paragraph after a code block explains what the reader just saw, rather than leaving the code to speak for itself.</p>
 <h2 id="tables-and-charts">Tables and charts</h2>

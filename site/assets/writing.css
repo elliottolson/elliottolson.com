@@ -273,6 +273,10 @@
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
+  --code-keyword: #7fb2ff;
+  --code-string: #7fd1a8;
+  --code-number: #e6a66e;
+  --code-name: #c9b6ff;
   counter-reset: note;
   font-size: clamp(1.0625rem, 1.35vw, 1.1875rem);
   line-height: 1.68;
@@ -366,8 +370,16 @@
   background: none;
   font-size: inherit;
 }
-.tok-k { color: rgb(var(--glow)); }
-.tok-c { color: var(--muted); }
+/* Code colours: the classes come from Pygments, applied when the site is built */
+.code .k, .code .kc, .code .kd, .code .kn, .code .kp, .code .kr, .code .kt, .code .ow { color: var(--code-keyword); }
+.code .s, .code .s1, .code .s2, .code .sa, .code .sb, .code .sc, .code .dl, .code .se,
+.code .sh, .code .si, .code .sx, .code .sr, .code .ss { color: var(--code-string); }
+.code .m, .code .mi, .code .mf, .code .mh, .code .mo, .code .mb, .code .il { color: var(--code-number); }
+.code .nf, .code .fm, .code .nc, .code .nd, .code .ne { color: var(--code-name); }
+.code .c, .code .ch, .code .cm, .code .c1, .code .cs, .code .cp, .code .cpf, .code .sd {
+  color: var(--muted);
+  font-style: italic;
+}
 
 .prose figure { margin-block: 2.4em; margin-inline: 0; }
 .prose figure .cover {
@@ -731,6 +743,10 @@
     --series-1: #2a78d6;
     --series-2: #eb6834;
     --series-3: #1baf7a;
+    --code-keyword: #0058c4;
+    --code-string: #18794e;
+    --code-number: #a8530c;
+    --code-name: #6a45c9;
   }
 }
 
