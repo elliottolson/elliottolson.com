@@ -46,6 +46,10 @@
   text-wrap: pretty;
 }
 
+.page-head__links { margin-top: clamp(20px, 3vw, 28px); }
+.page-head__links .link span { display: inline-block; }
+.page-head__links .link:hover span { transform: translateX(4px); }
+
 /* Covers: generative artwork drawn by writing.js */
 
 .cover {

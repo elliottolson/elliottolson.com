@@ -47,7 +47,8 @@ import json
 import re
 import shutil
 import sys
-from datetime import date
+from datetime import date, datetime, timezone
+from email.utils import format_datetime
 from pathlib import Path
 
 import markdown
@@ -63,6 +64,8 @@ OUT = SITE / "writing"
 SITE_URL = "https://elliottolson.com"
 COVERS = ("waves", "rings", "beams", "cells")
 HOME_START, HOME_END = "<!-- writing:start -->", "<!-- writing:end -->"
+FEED_TITLE = "Elliott Olson – Writing"
+FEED_DESCRIPTION = "Notes on evaluating models, building infrastructure, and the work around it."
 
 
 # Reading the posts
@@ -199,6 +202,7 @@ def page_head(title, description, noindex):
   <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="alternate" type="application/rss+xml" title="{html.escape(FEED_TITLE, quote=True)}" href="/writing/feed.xml">
   <link rel="stylesheet" href="/assets/styles.css">
   <link rel="stylesheet" href="/assets/writing.css">
   <script>document.documentElement.classList.add('js');</script>
@@ -278,8 +282,7 @@ def index_page(posts):
 {"".join(card(post) for post in rest)}      </div>
 """ if rest else '\n      <div class="posts"></div>\n'
     sample = any(post["sample"] for post in posts)
-    return page_head("Writing – Elliott Olson",
-                     "Notes on evaluating models, building infrastructure, and the work around it.", sample) + f"""
+    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, sample) + f"""
   <main>
     <header class="page-head" data-field>
       <canvas class="field" aria-hidden="true"></canvas>
@@ -292,6 +295,7 @@ def index_page(posts):
           <span class="word" style="--i:4" aria-hidden="true">work.</span>
         </h1>
         <p class="page-head__sub rise" style="--i:6">On evaluating models, building the infrastructure underneath them, and what I’ve learned along the way.</p>
+        <p class="page-head__links rise" style="--i:7"><a class="link" href="/writing/feed.xml">Follow by RSS <span aria-hidden="true">→</span></a></p>
       </div>
     </header>
 
@@ -356,6 +360,34 @@ def home_rows(posts):
 """ for post in posts[:3])
 
 
+def feed(posts):
+    """An RSS feed of every post, newest first, for people who follow blogs in a reader."""
+    def stamp(day):
+        return format_datetime(datetime(day.year, day.month, day.day, tzinfo=timezone.utc))
+
+    items = "".join(f"""
+    <item>
+      <title>{html.escape(post["title"])}</title>
+      <link>{SITE_URL}/writing/{post["slug"]}/</link>
+      <guid isPermaLink="true">{SITE_URL}/writing/{post["slug"]}/</guid>
+      <pubDate>{stamp(post["date"])}</pubDate>
+      <category>{html.escape(post["topic"])}</category>
+      <description>{html.escape(post["summary"])}</description>
+    </item>""" for post in posts)
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{html.escape(FEED_TITLE)}</title>
+    <link>{SITE_URL}/writing/</link>
+    <atom:link href="{SITE_URL}/writing/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>{html.escape(FEED_DESCRIPTION)}</description>
+    <language>en</language>
+    <lastBuildDate>{stamp(posts[0]["date"])}</lastBuildDate>{items}
+  </channel>
+</rss>
+"""
+
+
 # Writing the output
 
 def write(path, text):
@@ -376,6 +408,7 @@ def main():
                 shutil.rmtree(folder)
 
     write(OUT / "index.html", index_page(posts))
+    write(OUT / "feed.xml", feed(posts))
     for position, post in enumerate(posts):
         following = posts[(position + 1) % len(posts)] if len(posts) > 1 else None
         write(OUT / post["slug"] / "index.html", article_page(post, following))
