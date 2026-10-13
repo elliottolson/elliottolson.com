@@ -270,6 +270,7 @@ def card(post, featured=False):
     return f"""        <a class="{classes}" href="/writing/{post["slug"]}/" data-topic="{html.escape(post["topic"].lower(), quote=True)}">
           {cover(post)}
           <div class="post__text">
+            {'<p class="post__flag">Latest</p>' if featured else ""}
             {meta_line(post)}
             <h2 class="post__title">{html.escape(post["title"])}</h2>
             <p class="post__excerpt">{html.escape(post["summary"])}</p>
@@ -350,10 +351,16 @@ def article_page(post, following):
         <div class="prose">
 {post["body"]}
 
-          <div class="article-end">
-            <span>Published {format_date(post["date"])}</span>
-            <button class="ghost-button" type="button" data-copy="link">Copy link</button>
-          </div>
+          <footer class="byline">
+            <div>
+              <p class="byline__name">Elliott Olson</p>
+              <p class="byline__meta">Senior Software Engineer, Amazon AGI · Published {format_date(post["date"])}</p>
+            </div>
+            <div class="byline__actions">
+              <a class="link" href="https://www.linkedin.com/in/elliottolson" target="_blank" rel="noopener" data-goatcounter-click="click-linkedin">LinkedIn <span aria-hidden="true">↗</span></a>
+              <button class="ghost-button" type="button" data-copy="link">Copy link</button>
+            </div>
+          </footer>
         </div>
 
         <nav class="toc" aria-label="Contents">

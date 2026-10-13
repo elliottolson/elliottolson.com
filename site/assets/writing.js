@@ -28,7 +28,7 @@
     beams: (u, v, x, t) => 0.5 + 0.5 * Math.sin((x * 1.3 + v) * 8 - t * 1.5) * Math.cos(v * 2.2 + t * 0.3),
     cells: (u, v, x, t, s, cx, cy) => {
       const h = noise(Math.floor(cx / 3), Math.floor(cy / 3), s);
-      return 0.5 + 0.5 * Math.sin(h * 6.283 + t * (0.6 + h * 1.4));
+      return 0.42 + 0.44 * Math.sin(h * 6.283 + t * (0.6 + h * 1.4));
     },
   };
 
@@ -140,14 +140,32 @@
       toc.append(item);
       return link;
     });
+    const fill = document.createElement('span');
+    fill.className = 'toc__fill';
+    toc.append(fill);
+    const prose = document.querySelector('.prose');
+
     let ticking = false;
     const update = () => {
       ticking = false;
-      let current = 0;
+      const line = window.innerHeight * 0.3;
+      let current = -1;
       headings.forEach((heading, i) => {
-        if (heading.getBoundingClientRect().top <= window.innerHeight * 0.3) current = i;
+        if (heading.getBoundingClientRect().top <= line) current = i;
       });
-      links.forEach((link, i) => link.classList.toggle('is-active', i === current));
+      links.forEach((link, i) => link.classList.toggle('is-active', i === Math.max(0, current)));
+
+      // Fill the rail down to the reader's place: through finished sections, and partway through the current one
+      let filled = 0;
+      if (current >= 0) {
+        const start = headings[current].getBoundingClientRect().top;
+        const end = current + 1 < headings.length
+          ? headings[current + 1].getBoundingClientRect().top
+          : prose.getBoundingClientRect().bottom;
+        const item = links[current].parentElement;
+        filled = item.offsetTop + Math.min(1, Math.max(0, (line - start) / (end - start))) * item.offsetHeight;
+      }
+      fill.style.height = `${filled}px`;
     };
     window.addEventListener('scroll', () => {
       if (!ticking) {
