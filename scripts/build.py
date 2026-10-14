@@ -405,7 +405,7 @@ def article_page(post, following):
               <p class="byline__meta">Senior Software Engineer, Amazon AGI · Published {format_date(post["date"])}</p>
             </div>
             <div class="byline__actions">
-              <a class="link" href="https://www.linkedin.com/in/elliottolson" target="_blank" rel="noopener" data-goatcounter-click="click-linkedin">LinkedIn <span aria-hidden="true">↗</span></a>
+              <a class="link" href="https://www.linkedin.com/in/elliottolson" target="_blank" rel="me noopener" data-goatcounter-click="click-linkedin">LinkedIn <span aria-hidden="true">↗</span></a>
               <button class="ghost-button" type="button" data-copy="link">Copy link</button>
             </div>
           </footer>
