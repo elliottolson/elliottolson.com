@@ -466,9 +466,12 @@ def write(path, text):
 
 
 def sitemap(posts):
-    """Every published page, for search engines."""
-    pages = ["/"] + (["/writing/"] + [f'/writing/{post["slug"]}/' for post in posts] if posts else []) + ["/status/"]
-    urls = "".join(f"\n  <url>\n    <loc>{SITE_URL}{page}</loc>\n  </url>" for page in pages)
+    """Every published page, for search engines. A post carries its date, which tells them how fresh it is."""
+    pages = [("/", None)] + ([("/writing/", None)] + [(f'/writing/{post["slug"]}/', post["date"]) for post in posts] if posts else [])
+    pages.append(("/status/", None))
+    urls = "".join(
+        f"\n  <url>\n    <loc>{SITE_URL}{page}</loc>" + (f"\n    <lastmod>{day.isoformat()}</lastmod>" if day else "") + "\n  </url>"
+        for page, day in pages)
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}\n</urlset>\n'
 
 

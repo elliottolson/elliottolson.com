@@ -37,9 +37,13 @@ jobs:
           pip install -r requirements.txt
           python3 scripts/build.py
           test -f dist/index.html
+      - name: Note which pages are new
+        run: python3 scripts/tell_search_engines.py --find "$RUNNER_TEMP/new-pages.txt"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Tell search engines about the new pages
+        run: python3 scripts/tell_search_engines.py --send "$RUNNER_TEMP/new-pages.txt"

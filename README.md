@@ -24,6 +24,7 @@ scripts/
   make_share_images.py Makes the link preview image for each post
   serve.py             Local preview server
   check_links.py       Link checker
+  tell_search_engines.py  Announces newly published pages to search engines
   uptime.py            Checks the live site and its certificate, and records what it found
 .github/workflows/
   deploy.yml           Builds the site and publishes it to GitHub Pages
@@ -88,6 +89,8 @@ This needs Playwright (`pip install playwright`) and Google Chrome. The image is
 ## Deployment
 
 Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, as does the hourly uptime check, so adding a post only takes committing its Markdown file and share image. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90. Both checks also run against a build with drafts included, so the Writing pages are tested even before anything is published.
+
+When a publish adds a page the live site didn't have, such as a new or newly due post, `scripts/tell_search_engines.py` announces it through [IndexNow](https://www.indexnow.org), which Bing, Yandex and a few others act on within hours. Google doesn't take part; it reads the sitemap, where each post carries its date. The long-named `.txt` file in `site/` is the key that lets search engines trust the announcement, and is meant to be public.
 
 ## Monitoring
 
