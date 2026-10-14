@@ -36,20 +36,11 @@
   // What the latest check found
   const checked = data ? Date.parse(data.checked) : 0;
   const failing = data ? data.checks.filter((check) => !check.ok) : [];
-  const state = !data ? 'none'
-    : !data.sample && Date.now() - checked > STALE_AFTER ? 'stale'
-    : !failing.length ? 'ok'
-    : failing.some((check) => check.id === 'site') ? 'down' : 'warn';
+  const state = !data ? 'none' : !data.sample && Date.now() - checked > STALE_AFTER ? 'stale' : data.state;
   if (state === 'ok' || state === 'warn' || state === 'down') root.dataset.state = state;
 
   const headline = $('headline');
-  const title = {
-    ok: 'All systems operational.',
-    warn: 'Something needs attention.',
-    down: 'The site is down.',
-    stale: 'No recent checks.',
-    none: 'No checks yet.',
-  }[state];
+  const title = { stale: 'No recent checks.', none: 'No checks yet.' }[state] || data.headline;
   headline.textContent = '';
   headline.setAttribute('aria-label', title);
   title.split(' ').forEach((word, i) => {

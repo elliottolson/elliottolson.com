@@ -21,7 +21,7 @@ site/                  The hand-written site
 dist/                  The finished site, made by the build (not committed)
 scripts/
   build.py             Builds the site into dist/: site/ plus the Writing pages, RSS feed and Status data
-  make_share_images.py Makes the link preview image for each post
+  make_share_images.py Makes the link preview images for posts and the Status page
   serve.py             Local preview server
   check_links.py       Link checker
   tell_search_engines.py  Announces newly published pages to search engines
@@ -97,6 +97,8 @@ When a publish adds a page the live site didn't have, such as a new or newly due
 An hourly workflow runs `scripts/uptime.py`, which fails if the site is down, stops redirecting to HTTPS, or has a certificate within 14 days of expiry.
 
 Each run also adds a line to `uptime.jsonl` on the repository's `uptime` branch, which keeps the hourly commits out of the site's own history. The workflow then publishes the site again, and the build writes a summary of the last 90 days into the [Status page](https://elliottolson.com/status/). To watch something new, add a check to the list in `scripts/uptime.py`; it appears on the page by itself.
+
+Shared as a link, the Status page shows what the latest check found: the build points its preview at one of three images in `site/status/`, for working, needing attention and down, and words its title to match. Apps keep link previews for a while, so one already posted can lag behind. The images are made by `scripts/make_share_images.py` and only need remaking if the page's wording changes.
 
 The record isn't on `main`, so the local preview shows made-up checks, marked as a sample. `python3 scripts/serve.py 8000 down` shows the page as it looks during an outage, and `new` as it looks in the first days of checks.
 

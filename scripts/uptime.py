@@ -158,6 +158,19 @@ def failures(record):
     return [check for check in CHECKS if check.id in record and not record[check.id]["ok"]]
 
 
+# What the Status page, and the image shown when it is shared, say about each state
+HEADLINES = {
+    "ok": "All systems operational.",
+    "warn": "Something needs attention.",
+    "down": "The site is down.",
+}
+
+
+def state(record):
+    failed = failures(record)
+    return "ok" if not failed else "down" if any(check.id == "site" for check in failed) else "warn"
+
+
 def verify():
     records = read_log()
     if not records:
@@ -223,6 +236,8 @@ def summary(records):
                 if when(record) >= now - timedelta(hours=24) and record.get("site", {}).get("ms") is not None]
     certificate = latest.get("certificate", {})
     return {
+        "state": state(latest),
+        "headline": HEADLINES[state(latest)],
         "checked": latest["t"],
         "since": records[0]["t"],
         "from": first_day.isoformat(),

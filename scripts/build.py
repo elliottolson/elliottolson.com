@@ -475,6 +475,13 @@ def sitemap(posts):
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}\n</urlset>\n'
 
 
+def set_meta(text, name, content):
+    text, found = re.subn(rf'(<meta property="{name}" content=")[^"]*', lambda match: match.group(1) + html.escape(content, quote=True), text)
+    if found != 1:
+        sys.exit(f"site/status/index.html should have exactly one {name}")
+    return text
+
+
 def status_page(text, has_posts, records, made_up):
     """The hand-written Status page, with the record of the uptime checks written into it."""
     if STATUS_DATA not in text:
@@ -482,6 +489,10 @@ def status_page(text, has_posts, records, made_up):
     data = uptime.summary(records)
     if data and made_up:
         data["sample"] = True
+    if data:
+        # Shared as a link, the page shows what the latest check found
+        text = set_meta(text, "og:title", f'Status · {data["headline"].rstrip(".")}')
+        text = set_meta(text, "og:image", f'{SITE_URL}/status/og-{data["state"]}.png')
     text = ONLY_WITH_POSTS.sub(lambda block: block.group(1) if has_posts else "", text)
     return text.replace(STATUS_DATA, STATUS_DATA.replace("null", json.dumps(data, separators=(",", ":")).replace("</", "<\\/")))
 
