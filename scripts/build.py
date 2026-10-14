@@ -9,7 +9,8 @@ Each post is a Markdown file with a short header:
 
     ---
     title: What an evaluation score really tells you
-    date: 2026-10-06
+    date: 2026-10-06        (a date still to come holds the post back until that day;
+                             add a time, as in 2026-10-06 09:00, to hold it until then)
     topic: Evaluation
     cover: waves            (waves, rings, beams or cells)
     summary: One or two sentences shown on cards and under the title.
@@ -42,12 +43,14 @@ Beyond ordinary Markdown, a post can use:
     ```
 
 Running this script writes the finished site into dist/, which is not committed:
-GitHub runs the same script when it publishes the site. Drafts are left out
-unless asked for, which is what the local preview does. With no posts to show,
-the Writing section is left off the site entirely.
+GitHub runs the same script when it publishes the site. Drafts, and posts dated
+in the future, are left out unless asked for, which is what the local preview
+does. The site is published again every hour, so a post dated ahead appears by
+itself once its day comes. With no posts to show, the Writing section is left
+off the site entirely.
 
     python3 scripts/build.py             the site as it will be published
-    python3 scripts/build.py --drafts    the same, with drafts included
+    python3 scripts/build.py --drafts    the same, with drafts and scheduled posts included
 """
 import html
 import json
@@ -57,6 +60,7 @@ import sys
 from datetime import date, datetime, timezone
 from email.utils import format_datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import markdown
 from pygments import highlight
@@ -73,6 +77,7 @@ DIST = ROOT / "dist"
 OUT = DIST / "writing"
 SHARE = CONTENT / "share"
 SITE_URL = "https://elliottolson.com"
+TIMEZONE = ZoneInfo("America/Los_Angeles")  # the clock a scheduled post's date and time are read by
 COVERS = ("waves", "rings", "beams", "cells")
 HOME_START, HOME_END = "<!-- writing:start -->", "<!-- writing:end -->"
 # Parts of the home page that only make sense once there is something to read
@@ -98,17 +103,29 @@ def load_post(path):
     if cover not in COVERS:
         sys.exit(f"{path.name}: cover must be one of {', '.join(COVERS)}")
     body = match.group(2)
+    try:
+        publishes = datetime.fromisoformat(meta["date"]).replace(tzinfo=TIMEZONE)
+    except ValueError:
+        sys.exit(f"{path.name}: the date should look like 2026-10-06, or 2026-10-06 09:00 to give a time")
+    draft = meta.get("draft", "").lower() == "true"
     return {
         "slug": path.stem,
         "title": meta["title"],
-        "date": date.fromisoformat(meta["date"]),
+        "date": publishes.date(),
+        "publishes": publishes,
         "topic": meta["topic"],
         "summary": meta["summary"],
         "cover": cover,
-        "draft": meta.get("draft", "").lower() == "true",
+        "draft": draft,
+        "scheduled": not draft and publishes > datetime.now(TIMEZONE),
         "minutes": reading_minutes(body),
         "body": render_body(body, path.name),
     }
+
+
+def held(post):
+    """Whether a post is kept off the published site, as a draft or until its date."""
+    return post["draft"] or post["scheduled"]
 
 
 def reading_minutes(text):
@@ -204,6 +221,13 @@ def format_date(day):
     return f"{day:%b} {day.day}, {day.year}"
 
 
+def format_moment(moment):
+    """A date, with the time of day when one was given."""
+    if (moment.hour, moment.minute) == (0, 0):
+        return format_date(moment)
+    return f"{format_date(moment)} at {moment.hour % 12 or 12}:{moment:%M} {'AM' if moment.hour < 12 else 'PM'}"
+
+
 def page_head(title, description, noindex, path, image="/og.png", published=None):
     """The top of every page. `path` and `image` describe the page to search engines and link previews."""
     robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
@@ -251,8 +275,16 @@ def page_head(title, description, noindex, path, image="/og.png", published=None
 """
 
 
-def page_foot(draft):
-    badge = '\n  <div class="proto">Draft · not published</div>\n' if draft else ""
+def preview_note(posts):
+    """What the corner badge says when a page shows posts that aren't on the published site."""
+    if any(post["draft"] for post in posts):
+        return "Draft · not published"
+    waiting = [post["publishes"] for post in posts if post["scheduled"]]
+    return f"Scheduled · publishes {format_moment(min(waiting))}" if waiting else ""
+
+
+def page_foot(note):
+    badge = f'\n  <div class="proto">{note}</div>\n' if note else ""
     return f"""
   <footer class="footer">
     <div class="wrap footer__inner">
@@ -311,8 +343,7 @@ def index_page(posts):
       <div class="posts">
 {"".join(card(post) for post in rest)}      </div>
 """ if rest else '\n      <div class="posts"></div>\n'
-    draft = all(post["draft"] for post in posts)
-    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, draft, "/writing/") + f"""
+    return page_head("Writing – Elliott Olson", FEED_DESCRIPTION, all(map(held, posts)), "/writing/") + f"""
   <main>
     <header class="page-head" data-field>
       <canvas class="field" aria-hidden="true"></canvas>
@@ -332,7 +363,7 @@ def index_page(posts):
     <section class="wrap">
 {card(featured, featured=True)}{grid}    </section>
   </main>
-""" + page_foot(any(post["draft"] for post in posts))
+""" + page_foot(preview_note(posts))
 
 
 def article_page(post, following):
@@ -352,7 +383,7 @@ def article_page(post, following):
 """ if following else ""
     path = f'/writing/{post["slug"]}/'
     image = f"{path}og.png" if (SHARE / f'{post["slug"]}.png').exists() else "/og.png"
-    return page_head(f'{post["title"]} – Elliott Olson', post["summary"], post["draft"], path,
+    return page_head(f'{post["title"]} – Elliott Olson', post["summary"], held(post), path,
                      image=image, published=post["date"]) + f"""
   <main>
     <article>
@@ -387,7 +418,7 @@ def article_page(post, following):
       </div>
     </article>
 {next_block}  </main>
-""" + page_foot(post["draft"])
+""" + page_foot(preview_note([post]))
 
 
 def home_rows(posts):
@@ -454,8 +485,11 @@ def status_page(text, has_posts, records, made_up):
 
 def main(drafts=False, sample=None):
     posts = sorted((load_post(path) for path in CONTENT.glob("*.md")), key=lambda post: post["date"], reverse=True)
+    for post in posts:
+        if post["scheduled"]:
+            print(f'Scheduled for {format_moment(post["publishes"])}: {post["slug"]}')
     if not drafts:
-        posts = [post for post in posts if not post["draft"]]
+        posts = [post for post in posts if not held(post)]
 
     # Start from a clean copy of the hand-written site
     if DIST.exists():
@@ -466,7 +500,7 @@ def main(drafts=False, sample=None):
     text = home.read_text(encoding="utf-8")
     if HOME_START not in text or HOME_END not in text or not ONLY_WITH_POSTS.search(text):
         sys.exit("site/index.html is missing its writing markers")
-    write(DIST / "sitemap.xml", sitemap([post for post in posts if not post["draft"]]))
+    write(DIST / "sitemap.xml", sitemap([post for post in posts if not held(post)]))
 
     # The record of the uptime checks is kept on another branch, so a preview shows made-up checks instead
     records = uptime.read_log()

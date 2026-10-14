@@ -67,6 +67,8 @@ summary: One or two sentences shown on cards and under the title.
 
 `cover` picks the artwork: `waves`, `rings`, `beams` or `cells`. Add `draft: true` to keep a post out of the published site; it still appears in the local preview, marked as a draft.
 
+To schedule a post, give it a `date` that is still to come and commit it as usual. It stays off the published site until that day arrives in Pacific time, then appears by itself, because the site is published again every hour. A time can follow the date, as in `date: 2026-10-20 09:00`, to hold the post until then; it goes out with the next hourly publish, at about 17 minutes past. Until then the preview shows it marked as scheduled.
+
 Until there is at least one published post, the site has no Writing section at all: no nav link, no list on the home page and no Writing page. Publishing the first post turns all three on.
 
 The body is ordinary Markdown, plus a few extras:
@@ -75,7 +77,7 @@ The body is ordinary Markdown, plus a few extras:
 - A fenced code block is coloured by language; ` ```python title="retry.py" ` also names the file.
 - `::: table Caption`, `::: chart Caption`, `::: diagram Caption` and `::: aside` blocks, each closed with `:::`, add a captioned table, a chart drawn from JSON, an SVG diagram, or a boxed note. `content/writing/example-post.md`, a draft, shows every one.
 
-Then make the post's share image (drafts don't need one) and commit it with the Markdown file:
+Then make the post's share image (drafts don't need one, scheduled posts do) and commit it with the Markdown file:
 
 ```sh
 python3 scripts/make_share_images.py
@@ -85,7 +87,7 @@ This needs Playwright (`pip install playwright`) and Google Chrome. The image is
 
 ## Deployment
 
-Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, so adding a post only takes committing its Markdown file and share image. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90. Both checks also run against a build with drafts included, so the Writing pages are tested even before anything is published.
+Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, as does the hourly uptime check, so adding a post only takes committing its Markdown file and share image. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90. Both checks also run against a build with drafts included, so the Writing pages are tested even before anything is published.
 
 ## Monitoring
 
