@@ -228,8 +228,10 @@ def format_moment(moment):
     return f"{format_date(moment)} at {moment.hour % 12 or 12}:{moment:%M} {'AM' if moment.hour < 12 else 'PM'}"
 
 
-def page_head(title, description, noindex, path, image="/og.png", published=None):
-    """The top of every page. `path` and `image` describe the page to search engines and link previews."""
+def page_head(title, description, noindex, path, image="/og.png", published=None, data=None):
+    """The top of every page. `path`, `image` and `data` describe the page to search engines and link previews."""
+    described = ('\n  <script type="application/ld+json">' + json.dumps(data, ensure_ascii=False).replace("</", "<\\/") + "</script>"
+                 if data else "")
     robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
     article = f'\n  <meta property="article:published_time" content="{published.isoformat()}">' if published else ""
     share_title = html.escape(title.removesuffix(" – Elliott Olson"), quote=True)
@@ -256,7 +258,7 @@ def page_head(title, description, noindex, path, image="/og.png", published=None
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="alternate" type="application/rss+xml" title="{html.escape(FEED_TITLE, quote=True)}" href="/writing/feed.xml">
   <link rel="stylesheet" href="/assets/styles.css">
-  <link rel="stylesheet" href="/assets/writing.css">
+  <link rel="stylesheet" href="/assets/writing.css">{described}
   <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -383,8 +385,19 @@ def article_page(post, following):
 """ if following else ""
     path = f'/writing/{post["slug"]}/'
     image = f"{path}og.png" if (SHARE / f'{post["slug"]}.png').exists() else "/og.png"
+    # Names the author as the person the home page describes, so search engines credit the post to him
+    data = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post["title"],
+        "description": post["summary"],
+        "datePublished": post["publishes"].isoformat(),
+        "image": f"{SITE_URL}{image}",
+        "mainEntityOfPage": f"{SITE_URL}{path}",
+        "author": {"@type": "Person", "@id": f"{SITE_URL}/#person", "name": "Elliott Olson", "url": f"{SITE_URL}/"},
+    }
     return page_head(f'{post["title"]} – Elliott Olson', post["summary"], held(post), path,
-                     image=image, published=post["date"]) + f"""
+                     image=image, published=post["date"], data=data) + f"""
   <main>
     <article>
       <header class="wrap article-head">
