@@ -8,7 +8,6 @@ It's a static site in plain HTML, CSS and JavaScript. The home page is written b
 
 ```
 content/writing/       Posts, one Markdown file each
-  share/               The link preview image for each post
 site/                  The hand-written site
   index.html           The home page
   404.html             Shown for any URL that doesn't exist
@@ -22,6 +21,7 @@ dist/                  The finished site, made by the build (not committed)
 scripts/
   build.py             Builds the site into dist/: site/ plus the Writing pages, RSS feed and Status data
   make_share_images.py Makes the link preview images for posts and the Status page
+  fonts/               The font those images are set in
   serve.py             Local preview server
   check_links.py       Link checker
   tell_search_engines.py  Announces newly published pages to search engines
@@ -78,17 +78,17 @@ The body is ordinary Markdown, plus a few extras:
 - A fenced code block is coloured by language; ` ```python title="retry.py" ` also names the file.
 - `::: table Caption`, `::: chart Caption`, `::: diagram Caption` and `::: aside` blocks, each closed with `:::`, add a captioned table, a chart drawn from JSON, an SVG diagram, or a boxed note. `content/writing/example-post.md`, a draft, shows every one.
 
-Then make the post's share image (drafts don't need one, scheduled posts do) and commit it with the Markdown file:
+The post's share image, shown when its link is pasted into iMessage, LinkedIn or Slack, is drawn by GitHub when the site is published, so there is nothing to make or commit. To see how one will look, draw it locally:
 
 ```sh
 python3 scripts/make_share_images.py
 ```
 
-This needs Playwright (`pip install playwright`) and Google Chrome. The image is drawn with the Mac's system font, which is why it is made locally rather than on GitHub.
+This needs Playwright (`pip install playwright`) and Google Chrome, and writes to `content/writing/share/`, which is not committed. The text is set in [Inter](https://rsms.me/inter/), kept in `scripts/fonts/`, so an image comes out the same on GitHub as on a Mac.
 
 ## Deployment
 
-Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, as does the hourly uptime check, so adding a post only takes committing its Markdown file and share image. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90. Both checks also run against a build with drafts included, so the Writing pages are tested even before anything is published.
+Every push to `main` builds the site on GitHub and publishes it to GitHub Pages, as does the hourly uptime check, so adding a post only takes committing its Markdown file. The same push runs the link check and a Lighthouse audit, which fails if accessibility, best practices or SEO score below 90. Both checks also run against a build with drafts included, so the Writing pages are tested even before anything is published.
 
 When a publish adds a page the live site didn't have, such as a new or newly due post, `scripts/tell_search_engines.py` announces it through [IndexNow](https://www.indexnow.org), which Bing, Yandex and a few others act on within hours. Google doesn't take part; it reads the sitemap, where each post carries its date. The long-named `.txt` file in `site/` is the key that lets search engines trust the announcement, and is meant to be public.
 

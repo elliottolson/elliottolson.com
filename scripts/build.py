@@ -544,9 +544,10 @@ def main(drafts=False, sample=None):
     write(home, f"{before}{HOME_START}\n{home_rows(posts)}          {HOME_END}{after}")
 
     print(f"Built the site, with {len(posts)} {'post' if len(posts) == 1 else 'posts'}, into {DIST.relative_to(ROOT)}/")
+    # GitHub draws each post's share image before it builds; a build without them borrows the site's image
     missing = [post["slug"] for post in posts if not post["draft"] and not (SHARE / f'{post["slug"]}.png').exists()]
-    if missing:
-        print(f"No share image yet for: {', '.join(missing)}. Run scripts/make_share_images.py")
+    if missing and not drafts:
+        print(f"No share image for: {', '.join(missing)}, so the site's own image is used. scripts/make_share_images.py draws them.")
 
 
 if __name__ == "__main__":

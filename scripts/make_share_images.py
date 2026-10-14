@@ -2,17 +2,23 @@
 """Make the preview images shown when a page is shared (in iMessage, LinkedIn, Slack and so on).
 
 A post's image is its cover artwork with its topic and title on top, saved as
-content/writing/share/<post>.png. The Status page has three, one for each thing
-it can say, saved as site/status/og-<state>.png; each time the site is built,
-the page points at the one that matches the latest check. Images are committed,
-so this only needs running when a post is added or its title, topic or cover
-changes, or when the Status page's wording does.
+content/writing/share/<post>.png. GitHub makes these each time it publishes the
+site, so they are not committed; run this by hand only to see how one will look.
+
+The Status page has three, one for each thing it can say, saved as
+site/status/og-<state>.png. Each time the site is built, the page points at the
+one that matches the latest check. These are committed, and only need remaking
+when the page's wording changes.
+
+The text is set in Inter, which is kept in scripts/fonts/ so that an image comes
+out the same on GitHub as on a Mac.
 
     python3 scripts/make_share_images.py          make the images that are missing
     python3 scripts/make_share_images.py --all    remake every image
 
 Needs Playwright (pip install playwright) and Google Chrome.
 """
+import base64
 import html
 import sys
 import tempfile
@@ -23,11 +29,16 @@ from playwright.sync_api import sync_playwright
 import uptime
 from build import CONTENT, ROOT, SHARE, SITE, load_post
 
+# The font travels inside each page, where a browser will load it from any machine
+FONT = ("@font-face { font-family: Inter; font-weight: 100 900; src: url(data:font/woff2;base64,%s) format('woff2'); }"
+        % base64.b64encode((ROOT / "scripts" / "fonts" / "InterVariable.woff2").read_bytes()).decode())
+
 TEMPLATE = """<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
 <style>
+  {font}
   :root {{ --dot: 255, 255, 255; --glow: 127, 178, 255; }}
   html, body {{ margin: 0; }}
   body {{
@@ -37,7 +48,7 @@ TEMPLATE = """<!doctype html>
     overflow: hidden;
     background: #050506;
     color: #f5f5f7;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }}
   canvas {{ position: absolute; inset: 0; width: 100%; height: 100%; }}
@@ -72,6 +83,7 @@ STATUS_TEMPLATE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <style>
+  {font}
   html, body {{ margin: 0; }}
   body {{
     position: relative;
@@ -80,7 +92,7 @@ STATUS_TEMPLATE = """<!doctype html>
     overflow: hidden;
     background: #050506;
     color: #f5f5f7;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
   }}
   .dots {{
@@ -126,6 +138,7 @@ def main():
     for post in map(load_post, sorted(CONTENT.glob("*.md"))):
         title = post["title"]
         todo.append((SHARE / f'{post["slug"]}.png', None if post["draft"] else TEMPLATE.format(
+            font=FONT,
             size=92 if len(title) <= 28 else 78 if len(title) <= 46 else 64,
             cover=post["cover"],
             slug=post["slug"],
@@ -137,7 +150,7 @@ def main():
     # The Status page has one image for each thing it can say; the build picks the one that is true
     for state, headline in uptime.HEADLINES.items():
         todo.append((SITE / "status" / f"og-{state}.png",
-                     STATUS_TEMPLATE.format(colour=STATUS_COLOURS[state], headline=html.escape(headline))))
+                     STATUS_TEMPLATE.format(font=FONT, colour=STATUS_COLOURS[state], headline=html.escape(headline))))
 
     todo = [(target, source) for target, source in todo if source and (remake or not target.exists())]
     if not todo:
@@ -151,6 +164,9 @@ def main():
             file = Path(folder) / "share.html"
             file.write_text(source, encoding="utf-8")
             page.goto(file.as_uri())
+            page.evaluate("document.fonts.ready")
+            if not page.evaluate("document.fonts.check('600 96px Inter')"):
+                sys.exit("The font did not load, so no image was made")
             page.wait_for_timeout(500)
             target.parent.mkdir(parents=True, exist_ok=True)
             page.screenshot(path=str(target))
