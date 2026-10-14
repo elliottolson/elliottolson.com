@@ -2,7 +2,8 @@
 """Build the site into dist/, ready to publish.
 
 Everything in site/ is copied across as it is. The Writing section is then built
-from the Markdown files in content/writing/.
+from the Markdown files in content/writing/, and the Status page is given the
+record of the uptime checks (see uptime.py).
 
 Each post is a Markdown file with a short header:
 
@@ -63,6 +64,8 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import TextLexer, get_lexer_by_name
 from pygments.util import ClassNotFound
 
+import uptime
+
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "content" / "writing"
 SITE = ROOT / "site"
@@ -74,6 +77,8 @@ COVERS = ("waves", "rings", "beams", "cells")
 HOME_START, HOME_END = "<!-- writing:start -->", "<!-- writing:end -->"
 # Parts of the home page that only make sense once there is something to read
 ONLY_WITH_POSTS = re.compile(r"[ \t]*<!-- if-writing -->\n(.*?)[ \t]*<!-- /if-writing -->\n", re.S)
+# Where the Status page keeps the record of the uptime checks
+STATUS_DATA = 'id="status-data">null<'
 FEED_TITLE = "Elliott Olson – Writing"
 FEED_DESCRIPTION = "Notes on evaluating models, building infrastructure, and the work around it."
 
@@ -253,6 +258,7 @@ def page_foot(draft):
     <div class="wrap footer__inner">
       <span>© 2026 Elliott Olson</span>
       <span>Bellevue, Washington</span>
+      <a href="/status/">Status</a>
     </div>
   </footer>
 {badge}
@@ -430,12 +436,23 @@ def write(path, text):
 
 def sitemap(posts):
     """Every published page, for search engines."""
-    pages = ["/"] + (["/writing/"] + [f'/writing/{post["slug"]}/' for post in posts] if posts else [])
+    pages = ["/"] + (["/writing/"] + [f'/writing/{post["slug"]}/' for post in posts] if posts else []) + ["/status/"]
     urls = "".join(f"\n  <url>\n    <loc>{SITE_URL}{page}</loc>\n  </url>" for page in pages)
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}\n</urlset>\n'
 
 
-def main(drafts=False):
+def status_page(text, has_posts, records, made_up):
+    """The hand-written Status page, with the record of the uptime checks written into it."""
+    if STATUS_DATA not in text:
+        sys.exit("site/status/index.html is missing the place for its data")
+    data = uptime.summary(records)
+    if data and made_up:
+        data["sample"] = True
+    text = ONLY_WITH_POSTS.sub(lambda block: block.group(1) if has_posts else "", text)
+    return text.replace(STATUS_DATA, STATUS_DATA.replace("null", json.dumps(data, separators=(",", ":")).replace("</", "<\\/")))
+
+
+def main(drafts=False, sample=None):
     posts = sorted((load_post(path) for path in CONTENT.glob("*.md")), key=lambda post: post["date"], reverse=True)
     if not drafts:
         posts = [post for post in posts if not post["draft"]]
@@ -450,6 +467,13 @@ def main(drafts=False):
     if HOME_START not in text or HOME_END not in text or not ONLY_WITH_POSTS.search(text):
         sys.exit("site/index.html is missing its writing markers")
     write(DIST / "sitemap.xml", sitemap([post for post in posts if not post["draft"]]))
+
+    # The record of the uptime checks is kept on another branch, so a preview shows made-up checks instead
+    records = uptime.read_log()
+    if sample or (drafts and not records):
+        records, sample = uptime.sample(sample or "ok"), True
+    status = DIST / "status" / "index.html"
+    write(status, status_page(status.read_text(encoding="utf-8"), bool(posts), records, sample))
 
     if not posts:
         # Nothing to read yet, so the home page makes no mention of Writing

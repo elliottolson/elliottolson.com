@@ -2,3 +2,4 @@
 .lighthouseci/
 __pycache__/
 dist/
+data/

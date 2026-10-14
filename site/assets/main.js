@@ -49,13 +49,14 @@
 
   function countUp(el, delay) {
     const target = Number(el.dataset.count);
+    const places = (el.dataset.count.split('.')[1] || '').length;
     const duration = 1500;
-    el.textContent = '0';
+    el.textContent = (0).toFixed(places);
     let start;
     const tick = (now) => {
       if (start === undefined) start = now + delay;
       const p = clamp((now - start) / duration, 0, 1);
-      el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 4))));
+      el.textContent = (target * (1 - Math.pow(1 - p, 4))).toFixed(places);
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);

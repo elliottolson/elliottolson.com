@@ -15,6 +15,7 @@
 ## Links
 
 - [Website](https://elliottolson.com/)
+- [Status](https://elliottolson.com/status/): whether the website is up, checked every hour
 - [Email](mailto:hello@elliottolson.com)
 - [LinkedIn](https://www.linkedin.com/in/elliottolson)
 - [GitHub](https://github.com/elliottolson)

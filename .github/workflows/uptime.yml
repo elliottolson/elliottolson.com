@@ -12,7 +12,35 @@ jobs:
   check:
     name: Check live site
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Fetch the record of earlier checks
+        uses: actions/checkout@v4
+        with:
+          ref: uptime
+          path: data
       - name: Check elliottolson.com
-        run: bash scripts/check_uptime.sh
+        run: python3 scripts/uptime.py
+      - name: Save what the check found
+        working-directory: data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uptime.jsonl
+          git commit --quiet --message "Record a check"
+          git push
+      - name: Fail if anything is wrong
+        run: python3 scripts/uptime.py --verify
+
+  # The Status page is part of the site, so showing a new check means publishing the site again
+  publish:
+    name: Publish
+    needs: check
+    if: ${{ !cancelled() }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml

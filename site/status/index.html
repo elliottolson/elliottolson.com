@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Status – Elliott Olson</title>
+  <meta name="description" content="Whether elliottolson.com is up and working, checked every hour, with the last 90 days of history.">
+  <link rel="canonical" href="https://elliottolson.com/status/">
+  <meta property="og:title" content="Status">
+  <meta property="og:description" content="Whether elliottolson.com is up and working, checked every hour, with the last 90 days of history.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://elliottolson.com/status/">
+  <meta property="og:site_name" content="Elliott Olson">
+  <meta property="og:image" content="https://elliottolson.com/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#050506" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="stylesheet" href="/assets/status.css">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="wrap nav__inner">
+      <a class="nav__name" href="/">Elliott Olson</a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="/#work">Work</a>
+        <a class="nav__optional" href="/#experience">Experience</a>
+        <!-- if-writing -->
+        <a href="/writing/">Writing</a>
+        <!-- /if-writing -->
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+    <div class="nav__progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="top">
+    <section class="hero" id="hero" data-field>
+      <canvas class="field" aria-hidden="true"></canvas>
+      <div class="wrap hero__inner">
+        <p class="hero__eyebrow rise" style="--i:0"><span class="pulse" aria-hidden="true"></span>Status · elliottolson.com</p>
+        <h1 class="hero__title" id="headline">Status</h1>
+        <p class="hero__sub rise" style="--i:5" id="summary"></p>
+        <noscript><p class="hero__sub">This page needs JavaScript to show what the checks found.</p></noscript>
+      </div>
+    </section>
+
+    <section class="summary" aria-label="Summary">
+      <div class="wrap bento">
+        <article class="tile reveal">
+          <div class="tile__viz">
+            <div class="viz-ring" id="uptime-ring" aria-hidden="true">
+              <svg viewBox="0 0 120 120">
+                <circle class="ring__track" cx="60" cy="60" r="52" pathLength="100"/>
+                <circle class="ring__value" cx="60" cy="60" r="52" pathLength="100"/>
+              </svg>
+              <p><b id="uptime-total">–</b>checks</p>
+            </div>
+          </div>
+          <div class="tile__text">
+            <p class="tile__label" id="uptime-label">Uptime</p>
+            <p class="tile__num"><span id="uptime">–</span>%</p>
+            <p class="tile__body">of hourly checks found the site up and working.</p>
+          </div>
+        </article>
+
+        <article class="tile reveal">
+          <div class="tile__viz">
+            <div class="viz-spark" id="spark" aria-hidden="true"></div>
+          </div>
+          <div class="tile__text">
+            <p class="tile__label">Response time</p>
+            <p class="tile__num"><span id="response">–</span> ms</p>
+            <p class="tile__body">on average over the last 24 hours, measured from GitHub’s servers.</p>
+          </div>
+        </article>
+
+        <article class="tile reveal">
+          <div class="tile__viz">
+            <div class="viz-term" id="term" aria-hidden="true">
+              <div class="term__track"><i></i><b></b></div>
+              <div class="term__scale"><span id="term-issued"></span><span id="term-expires"></span></div>
+            </div>
+          </div>
+          <div class="tile__text">
+            <p class="tile__label">Certificate</p>
+            <p class="tile__num"><span id="certificate">–</span> days</p>
+            <p class="tile__body">until the certificate expires. It renews automatically before then.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="checks">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="section__label">Checks</p>
+          <h2>What’s being watched.</h2>
+        </header>
+        <div class="checks" id="check-list"></div>
+      </div>
+    </section>
+
+    <section class="section section--last" id="history">
+      <div class="wrap">
+        <header class="section__head reveal">
+          <p class="section__label">History</p>
+          <h2 id="history-title">Incidents.</h2>
+        </header>
+        <ol class="rows" id="incident-list"></ol>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>© 2026 Elliott Olson</span>
+      <span>Bellevue, Washington</span>
+      <a href="/status/" aria-current="page">Status</a>
+    </div>
+  </footer>
+
+  <div class="tip" id="tip" aria-hidden="true"><b></b><span></span></div>
+
+  <!-- build.py replaces null with the record of the uptime checks -->
+  <script type="application/json" id="status-data">null</script>
+  <script src="/assets/status.js" defer></script>
+  <script src="/assets/main.js" defer></script>
+  <script data-goatcounter="https://elliottolson.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>

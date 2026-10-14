@@ -5,7 +5,10 @@ Builds the site into dist/, drafts included, and serves it the way GitHub Pages
 does, including showing 404.html for any path that doesn't exist. The site is rebuilt whenever
 a file in site/ or content/ has changed, so a browser refresh shows the edit.
 
-    python3 scripts/serve.py [port]
+    python3 scripts/serve.py [port] [ok|down|new]
+
+The Status page has no real checks to show in a preview, so it shows made-up ones. The last
+argument picks which: everything working (the default), the site down, or the first days of checks.
 """
 import sys
 from functools import partial
@@ -15,6 +18,9 @@ from threading import Lock
 import build
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+SAMPLE = sys.argv[2] if len(sys.argv) > 2 else None
+if SAMPLE not in (None, *build.uptime.SAMPLES):
+    sys.exit(f"The sample must be one of: {', '.join(build.uptime.SAMPLES)}")
 built_at = 0.0
 lock = Lock()
 
@@ -33,7 +39,7 @@ def rebuild_if_changed():
             return
         built_at = changed
         try:
-            build.main(drafts=True)
+            build.main(drafts=True, sample=SAMPLE)
         except SystemExit as problem:
             print(f"Build failed: {problem}")
 
